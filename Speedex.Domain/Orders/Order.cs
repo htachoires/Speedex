@@ -1,10 +1,10 @@
-using Domain.Products;
+using Speedex.Domain.Products;
 
-namespace Domain.Commands;
+namespace Speedex.Domain.Orders;
 
-public record Command
+public record Order
 {
-    public CommandId CommandId { get; init; }
+    public OrderId OrderId { get; init; }
     public IEnumerable<ProductCommand> Products { get; init; }
     public DeliveryType DeliveryType { get; init; }
     public Recipient Recipient { get; init; }
@@ -37,4 +37,4 @@ public record ProductCommand
     public int Quantity { get; init; }
 }
 
-public record CommandId(string Value);
+public record OrderId(string Value);

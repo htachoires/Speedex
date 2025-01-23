@@ -1,7 +1,7 @@
-using Domain.Parcels;
-using Domain.Products;
+using Speedex.Domain.Parcels;
+using Speedex.Domain.Products;
 
-namespace Domain.Returns;
+namespace Speedex.Domain.Returns;
 
 public record Return
 {

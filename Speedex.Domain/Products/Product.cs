@@ -1,4 +1,4 @@
-namespace Domain.Products;
+namespace Speedex.Domain.Products;
 
 public record Product
 {

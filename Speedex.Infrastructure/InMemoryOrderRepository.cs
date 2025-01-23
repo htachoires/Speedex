@@ -1,0 +1,36 @@
+using Speedex.Domain.Orders;
+using Speedex.Domain.Orders.Repositories;
+using Speedex.Domain.Orders.Repositories.Dtos;
+
+namespace Speedex.Infrastructure;
+
+public class InMemoryOrderRepository : IOrderRepository
+{
+    private readonly Dictionary<OrderId, Order> _orders = new();
+
+    public UpsertOrderResult UpsertCommand(Order order)
+    {
+        if (!_orders.TryAdd(order.OrderId, order))
+        {
+            _orders[order.OrderId] = order;
+        }
+
+        return new UpsertOrderResult
+        {
+            Status = UpsertOrderResult.UpsertStatus.Success,
+        };
+    }
+
+    public IEnumerable<Order> GetOrders(GetOrdersDto query)
+    {
+        if (query.OrderId is not null)
+        {
+            return _orders.TryGetValue(query.OrderId, out var order) ? new List<Order> { order } : new List<Order>();
+        }
+
+        return _orders.Values
+            .Skip((query.PageIndex - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToList();
+    }
+}

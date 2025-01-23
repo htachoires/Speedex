@@ -1,13 +1,13 @@
-using Domain.Commands;
-using Domain.Products;
+using Speedex.Domain.Orders;
+using Speedex.Domain.Products;
 
-namespace Domain.Parcels;
+namespace Speedex.Domain.Parcels;
 
 public record Parcel
 {
     public ParcelId ParcelId { get; init; }
     public ParcelStatus ParcelStatus { get; init; }
-    public CommandId CommandId { get; init; }
+    public OrderId OrderId { get; init; }
     public IEnumerable<ParcelProduct> Products { get; init; }
     public DateTime CreationDate { get; init; }
     public DateTime UpdateDate { get; init; }
