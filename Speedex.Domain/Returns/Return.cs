@@ -1,3 +1,4 @@
+using Speedex.Domain.Orders;
 using Speedex.Domain.Parcels;
 using Speedex.Domain.Products;
 
@@ -7,7 +8,8 @@ public record Return
 {
     public ReturnId ReturnId { get; init; }
     public ReturnStatus Status { get; init; }
-    public ParcelId OriginalParcelId { get; init; }
+    public ParcelId ParcelId { get; init; }
+    public OrderId OrderId { get; init; }
     public IEnumerable<ReturnProduct> Products { get; init; }
     public DateTime CreationDate { get; init; }
     public DateTime UpdateDate { get; init; }

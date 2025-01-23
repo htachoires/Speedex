@@ -8,8 +8,12 @@ using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Orders.UseCases.GetOrders;
+using Speedex.Domain.Parcels;
+using Speedex.Domain.Parcels.Repositories;
 using Speedex.Domain.Products;
 using Speedex.Domain.Products.Repositories;
+using Speedex.Domain.Returns;
+using Speedex.Domain.Returns.Repositories;
 using Speedex.Infrastructure;
 
 namespace Speedex.Api.Bootstrap;
@@ -41,6 +45,8 @@ public static class Bootstrap
         services
             .AddSingleton<IDataGenerator, DataGenerator>()
             .AddSingleton<IDataGenerator<OrderId, Order>, OrdersGenerator>()
+            .AddSingleton<IDataGenerator<ParcelId, Parcel>, ParcelsGenerator>()
+            .AddSingleton<IDataGenerator<ReturnId, Return>, ReturnsGenerator>()
             .AddSingleton<IDataGenerator<ProductId, Product>, ProductsGenerator>();
 
         return services;
@@ -58,6 +64,8 @@ public static class Bootstrap
     {
         services
             .AddSingleton<IOrderRepository, InMemoryOrderRepository>()
+            .AddSingleton<IParcelRepository, InMemoryParcelRepository>()
+            .AddSingleton<IReturnRepository, InMemoryReturnRepository>()
             .AddSingleton<IProductRepository, InMemoryProductRepository>();
 
         return services;
