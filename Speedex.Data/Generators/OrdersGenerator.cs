@@ -3,12 +3,11 @@ using Speedex.Domain.Products;
 
 namespace Speedex.Data.Generators;
 
-public class OrdersGenerator : IDataGenerator<OrderId, Order>
+public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator) : IDataGenerator<OrderId, Order>
 {
     public Dictionary<OrderId, Order> Data { get; private set; }
 
-    private readonly IDataGenerator<ProductId, Product> _productGenerator;
-    private readonly Random _random;
+    private readonly Random _random = new();
 
     private List<string> _firstNames =
         ["Emma", "Liam", "Olivia", "Noah", "Sophia", "James", "Isabella", "Elijah", "Ava", "Lucas"];
@@ -36,12 +35,6 @@ public class OrdersGenerator : IDataGenerator<OrderId, Order>
     private readonly List<string> _streetParts =
         ["Main", "Park", "Oak", "Pine", "Elm", "Maple", "Sunset", "Hill", "River", "Lake"];
 
-    public OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator)
-    {
-        _productGenerator = productGenerator;
-        _random = new Random();
-    }
-
     public void GenerateData(int nbElements)
     {
         Data = Enumerable
@@ -68,10 +61,10 @@ public class OrdersGenerator : IDataGenerator<OrderId, Order>
 
         var productIds = Enumerable
             .Range(0, nbProducts * 2)
-            .Select(x => _random.Next(0, _productGenerator.Data.Count))
+            .Select(x => _random.Next(0, productGenerator.Data.Count))
             .Distinct()
             .Take(nbProducts)
-            .Select(x => _productGenerator.Data.ElementAt(x).Key);
+            .Select(x => productGenerator.Data.ElementAt(x).Key);
 
         return new Order
         {

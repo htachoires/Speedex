@@ -3,17 +3,10 @@ using Speedex.Domain.Parcels;
 
 namespace Speedex.Data.Generators;
 
-public class ParcelsGenerator : IDataGenerator<ParcelId, Parcel>
+public class ParcelsGenerator(IDataGenerator<OrderId, Order> orderGenerator) : IDataGenerator<ParcelId, Parcel>
 {
-    private readonly IDataGenerator<OrderId, Order> _orderGenerator;
     public Dictionary<ParcelId, Parcel> Data { get; private set; }
-    private readonly Random _random;
-
-    public ParcelsGenerator(IDataGenerator<OrderId, Order> orderGenerator)
-    {
-        _orderGenerator = orderGenerator;
-        _random = new Random();
-    }
+    private readonly Random _random = new();
 
     public void GenerateData(int nbElements)
     {
@@ -25,7 +18,7 @@ public class ParcelsGenerator : IDataGenerator<ParcelId, Parcel>
 
     private Parcel GenerateParcel()
     {
-        var order = _orderGenerator.Data.ElementAt(_random.Next(_orderGenerator.Data.Count)).Value;
+        var order = orderGenerator.Data.ElementAt(_random.Next(orderGenerator.Data.Count)).Value;
 
         return new Parcel
         {

@@ -5,15 +5,9 @@ using Speedex.Domain.Products;
 
 namespace Speedex.Domain.Orders.UseCases.CreateOrder;
 
-public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, CreateOrderResult>
+public class CreateOrderCommandHandler(IOrderRepository orderRepository)
+    : ICommandHandler<CreateOrderCommand, CreateOrderResult>
 {
-    private readonly IOrderRepository _orderRepository;
-
-    public CreateOrderCommandHandler(IOrderRepository orderRepository)
-    {
-        _orderRepository = orderRepository;
-    }
-
     public CreateOrderResult Handle(CreateOrderCommand command)
     {
         var now = DateTime.Now;
@@ -42,7 +36,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             UpdateDate = now
         };
 
-        var result = _orderRepository.UpsertOrder(newCommand);
+        var result = orderRepository.UpsertOrder(newCommand);
 
         if (result.Status != UpsertOrderResult.UpsertStatus.Success)
         {

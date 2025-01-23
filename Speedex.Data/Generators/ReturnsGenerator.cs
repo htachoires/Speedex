@@ -1,20 +1,12 @@
-using Speedex.Domain.Orders;
 using Speedex.Domain.Parcels;
 using Speedex.Domain.Returns;
 
 namespace Speedex.Data.Generators;
 
-public class ReturnsGenerator : IDataGenerator<ReturnId, Return>
+public class ReturnsGenerator(IDataGenerator<ParcelId, Parcel> parcelsGenerator) : IDataGenerator<ReturnId, Return>
 {
-    private readonly IDataGenerator<ParcelId, Parcel> _parcelsGenerator;
     public Dictionary<ReturnId, Return> Data { get; private set; }
-    private readonly Random _random;
-
-    public ReturnsGenerator(IDataGenerator<ParcelId, Parcel> parcelsGenerator)
-    {
-        _parcelsGenerator = parcelsGenerator;
-        _random = new Random();
-    }
+    private readonly Random _random = new();
 
     public void GenerateData(int nbElements)
     {
@@ -26,7 +18,7 @@ public class ReturnsGenerator : IDataGenerator<ReturnId, Return>
 
     private Return GenerateReturn()
     {
-        var parcel = _parcelsGenerator.Data.ElementAt(_random.Next(_parcelsGenerator.Data.Count)).Value;
+        var parcel = parcelsGenerator.Data.ElementAt(_random.Next(parcelsGenerator.Data.Count)).Value;
 
         return new Return
         {

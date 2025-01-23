@@ -5,7 +5,7 @@ namespace Speedex.Data.Generators;
 public class ProductsGenerator : IDataGenerator<ProductId, Product>
 {
     public Dictionary<ProductId, Product> Data { get; private set; } = new();
-    private readonly Random _random;
+    private readonly Random _random = new();
 
     private readonly List<Tuple<string, string, string, string, string>> _productsInfo =
     [
@@ -256,11 +256,6 @@ public class ProductsGenerator : IDataGenerator<ProductId, Product>
         new("Compact Air Purifier", "Improve your indoor air quality with this compact air purifier.",
             "Health & Personal Care", "Air Quality", "Purifiers")
     ];
-
-    public ProductsGenerator()
-    {
-        _random = new Random();
-    }
 
     public void GenerateData(int nbElements)
     {
