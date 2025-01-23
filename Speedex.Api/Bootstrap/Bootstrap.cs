@@ -1,10 +1,15 @@
 using FluentValidation;
 using Speedex.Api.Features.Orders.Requests;
 using Speedex.Api.Features.Orders.Validators;
+using Speedex.Data;
+using Speedex.Data.Generators;
 using Speedex.Domain.Commons;
+using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Orders.UseCases.GetOrders;
+using Speedex.Domain.Products;
+using Speedex.Domain.Products.Repositories;
 using Speedex.Infrastructure;
 
 namespace Speedex.Api.Bootstrap;
@@ -17,7 +22,8 @@ public static class Bootstrap
             .RegisterValidators()
             .RegisterRepositories()
             .RegisterCommandHandlers()
-            .RegisterQueryHandlers();
+            .RegisterQueryHandlers()
+            .RegisterDataGenerators();
 
         return services;
     }
@@ -26,6 +32,16 @@ public static class Bootstrap
     {
         services
             .AddScoped<IQueryHandler<GetOrdersQuery, GetOrdersQueryResult>, GetOrdersQueryHandler>();
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterDataGenerators(this IServiceCollection services)
+    {
+        services
+            .AddSingleton<IDataGenerator, DataGenerator>()
+            .AddSingleton<IDataGenerator<OrderId, Order>, OrdersGenerator>()
+            .AddSingleton<IDataGenerator<ProductId, Product>, ProductsGenerator>();
 
         return services;
     }
@@ -41,7 +57,8 @@ public static class Bootstrap
     private static IServiceCollection RegisterRepositories(this IServiceCollection services)
     {
         services
-            .AddSingleton<IOrderRepository, InMemoryOrderRepository>();
+            .AddSingleton<IOrderRepository, InMemoryOrderRepository>()
+            .AddSingleton<IProductRepository, InMemoryProductRepository>();
 
         return services;
     }

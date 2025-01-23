@@ -8,7 +8,7 @@ public class InMemoryOrderRepository : IOrderRepository
 {
     private readonly Dictionary<OrderId, Order> _orders = new();
 
-    public UpsertOrderResult UpsertCommand(Order order)
+    public UpsertOrderResult UpsertOrder(Order order)
     {
         if (!_orders.TryAdd(order.OrderId, order))
         {

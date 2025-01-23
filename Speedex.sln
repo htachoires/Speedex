@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Domain", "Speedex.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Infrastructure", "Speedex.Infrastructure\Speedex.Infrastructure.csproj", "{486C1472-B7ED-49A1-ABB5-EF8AB574B23C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Data", "Speedex.Data\Speedex.Data.csproj", "{0B58C0B7-19B3-4BE9-A177-2904BD45DA0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{486C1472-B7ED-49A1-ABB5-EF8AB574B23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486C1472-B7ED-49A1-ABB5-EF8AB574B23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486C1472-B7ED-49A1-ABB5-EF8AB574B23C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B58C0B7-19B3-4BE9-A177-2904BD45DA0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B58C0B7-19B3-4BE9-A177-2904BD45DA0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B58C0B7-19B3-4BE9-A177-2904BD45DA0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B58C0B7-19B3-4BE9-A177-2904BD45DA0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

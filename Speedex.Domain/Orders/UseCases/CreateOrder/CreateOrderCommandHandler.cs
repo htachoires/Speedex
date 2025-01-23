@@ -21,7 +21,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         var newCommand = new Order
         {
             OrderId = new OrderId(Guid.NewGuid().ToString()),
-            Products = command.Products.Select(x => new ProductCommand
+            Products = command.Products.Select(x => new OrderProduct
             {
                 ProductId = new ProductId(x.ProductId),
                 Quantity = x.Quantity
@@ -32,7 +32,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                 FirstName = command.Recipient.FirstName,
                 LastName = command.Recipient.LastName,
                 Email = command.Recipient.Email,
-                Phone = command.Recipient.Phone,
+                PhoneNumber = command.Recipient.Phone,
                 Address = command.Recipient.Address,
                 AdditionalAddress = command.Recipient.AdditionalAddress,
                 City = command.Recipient.City,
@@ -42,7 +42,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             UpdateDate = now
         };
 
-        var result = _orderRepository.UpsertCommand(newCommand);
+        var result = _orderRepository.UpsertOrder(newCommand);
 
         if (result.Status != UpsertOrderResult.UpsertStatus.Success)
         {
