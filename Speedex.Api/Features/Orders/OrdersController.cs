@@ -41,6 +41,6 @@ public class OrdersController : ControllerBase
 
         var result = handler.Query(queryParams.ToQuery());
 
-        return Ok(result.Items);
+        return Ok(result.ToResponse());
     }
 }
