@@ -50,6 +50,8 @@ public static class Bootstrap
     {
         services
             .AddSingleton<IValidator<CreateOrderBodyRequest>, CreateOrderValidator>()
+            .AddSingleton<IValidator<CreateOrderBodyRequest.RecipientBodyRequest>, RecipientValidator>()
+            .AddSingleton<IValidator<CreateOrderBodyRequest.ProductBodyRequest>, ProductValidator>()
             .AddSingleton<IValidator<GetOrdersQueryParams>, GetOrdersValidator>();
 
         return services;
