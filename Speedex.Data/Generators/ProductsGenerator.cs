@@ -267,7 +267,7 @@ public class ProductsGenerator : IDataGenerator<ProductId, Product>
 
     private Product GenerateProduct()
     {
-        var dimensions = Enumerable.Range(1, 3).OrderBy(_ => _random.Next(10, 200)).ToArray();
+        var dimensions = Enumerable.Range(1, 3).Select(_ => _random.Next(10, 100)).Order().ToArray();
 
         var productInfo = _productsInfo[_random.Next(_productsInfo.Count - 1)];
 
@@ -283,7 +283,7 @@ public class ProductsGenerator : IDataGenerator<ProductId, Product>
 
             Price = new Price
             {
-                Amount = (decimal)(_random.Next(1_000) + _random.NextDouble()),
+                Amount = (decimal)Math.Round(_random.Next(1_000) + _random.NextDouble(), 2),
                 Currency = Currency.EUR
             },
             Dimensions = new Dimensions
@@ -295,7 +295,7 @@ public class ProductsGenerator : IDataGenerator<ProductId, Product>
             },
             Weight = new Weight
             {
-                Value = _random.Next(10, 10_000),
+                Value = Math.Round(_random.Next(10, 3_000) / 1_000f, 3),
                 Unit = WeightUnit.Kg
             },
             CreationDate = DateTime.Now,
