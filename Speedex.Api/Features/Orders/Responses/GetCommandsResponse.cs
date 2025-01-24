@@ -6,7 +6,7 @@ public class GetOrdersResponse
 
     public record GetOrderItemResponse
     {
-        public string OrderId { get; set; }
+        public string OrderId { get; init; }
         public IEnumerable<OrderProductResponse> Products { get; init; }
         public string DeliveryType { get; init; }
         public Recipient Recipient { get; init; }

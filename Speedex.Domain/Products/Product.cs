@@ -5,9 +5,9 @@ public record Product
     public ProductId ProductId { get; init; }
     public string Name { get; init; }
     public string Description { get; init; }
-    public string Category { get; set; }
-    public string SecondLevelCategory { get; set; }
-    public string ThirdLevelCategory { get; set; }
+    public string Category { get; init; }
+    public string SecondLevelCategory { get; init; }
+    public string ThirdLevelCategory { get; init; }
     public Price Price { get; init; }
     public Dimensions Dimensions { get; init; }
     public Weight Weight { get; init; }
