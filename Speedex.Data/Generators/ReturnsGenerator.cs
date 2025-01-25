@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Speedex.Domain.Parcels;
 using Speedex.Domain.Returns;
 
@@ -10,19 +11,28 @@ public class ReturnsGenerator(IDataGenerator<ParcelId, Parcel> parcelsGenerator)
 
     public void GenerateData(int nbElements)
     {
-        Data = Enumerable
+        var concurrentData = new ConcurrentDictionary<ReturnId, Return>();
+
+        Enumerable
             .Range(0, nbElements)
-            .Select(_ => GenerateReturn())
-            .ToDictionary(x => x.ReturnId);
+            .AsParallel()
+            .ForAll(
+                x =>
+                {
+                    var product = GenerateReturn(x);
+                    concurrentData.TryAdd(product.ReturnId, product);
+                });
+
+        Data = concurrentData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
-    private Return GenerateReturn()
+    private Return GenerateReturn(int index)
     {
         var parcel = parcelsGenerator.Data.ElementAt(_random.Next(parcelsGenerator.Data.Count)).Value;
 
         return new Return
         {
-            ReturnId = new ReturnId(Guid.NewGuid().ToString()),
+            ReturnId = new ReturnId($"RE_{index}_{GenerateHexadecimal(10)}"),
             ParcelId = parcel.ParcelId,
             OrderId = parcel.OrderId,
             ReturnStatus = (ReturnStatus)_random.Next(0, 2),

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Speedex.Domain.Orders;
 using Speedex.Domain.Products;
 
@@ -37,13 +38,22 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
     public void GenerateData(int nbElements)
     {
-        Data = Enumerable
+        var concurrentData = new ConcurrentDictionary<OrderId, Order>();
+
+        Enumerable
             .Range(0, nbElements)
-            .Select(_ => GenerateOrder())
-            .ToDictionary(x => x.OrderId);
+            .AsParallel()
+            .ForAll(
+                x =>
+                {
+                    var order = GenerateOrder(x);
+                    concurrentData.TryAdd(order.OrderId, order);
+                });
+
+        Data = concurrentData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
-    private Order GenerateOrder()
+    private Order GenerateOrder(int index)
     {
         var nbProducts = _random.Next(1, 10);
         var firstName = _firstNames[_random.Next(0, _firstNames.Count - 1)];
@@ -68,7 +78,7 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
         return new Order
         {
-            OrderId = new OrderId(Guid.NewGuid().ToString()),
+            OrderId = new OrderId($"OR_{index}_{GenerateHexadecimal(10)}"),
             Products = productIds.Select(x => new OrderProduct
             {
                 ProductId = x,

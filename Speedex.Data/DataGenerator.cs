@@ -22,10 +22,10 @@ public class DataGenerator(
 {
     public void GenerateData()
     {
-        productGenerator.GenerateData(10_000);
-        orderGenerator.GenerateData(500);
-        parcelGenerator.GenerateData(500);
-        returnGenerator.GenerateData(250);
+        productGenerator.GenerateData(50_000);
+        orderGenerator.GenerateData(10_000);
+        parcelGenerator.GenerateData(8_000);
+        returnGenerator.GenerateData(3_000);
 
         productGenerator.Data.Values
             .ToList()

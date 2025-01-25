@@ -1,0 +1,1 @@
+global using static Speedex.Data.Generators.Utils.HexadecimalGenerator;

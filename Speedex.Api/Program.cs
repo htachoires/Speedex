@@ -1,5 +1,5 @@
 using Speedex.Api.Bootstrap;
-using Speedex.Data;
+using Speedex.Api.Bootstrap.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,10 +9,13 @@ builder.Services.AddSwaggerGen(options =>
     options.CustomSchemaIds(type =>  type.FullName.Replace("+", "."));
 });
 builder.Services.AddControllers();
+builder.Services.AddLogging();
 builder.Services
     .RegisterDomainServices()
     .RegisterApiServices()
     .RegisterInfrastructureServices();
+
+builder.Services.AddHostedService<DataGeneratorHostedService>();
 
 var app = builder.Build();
 
@@ -21,8 +24,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.Services.GetRequiredService<IDataGenerator>().GenerateData();
 
 app.UseHttpsRedirection();
 

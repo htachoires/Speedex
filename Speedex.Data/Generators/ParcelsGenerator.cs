@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Speedex.Domain.Orders;
 using Speedex.Domain.Parcels;
 
@@ -10,19 +11,28 @@ public class ParcelsGenerator(IDataGenerator<OrderId, Order> orderGenerator) : I
 
     public void GenerateData(int nbElements)
     {
-        Data = Enumerable
+        var concurrentData = new ConcurrentDictionary<ParcelId, Parcel>();
+
+        Enumerable
             .Range(0, nbElements)
-            .Select(_ => GenerateParcel())
-            .ToDictionary(x => x.ParcelId);
+            .AsParallel()
+            .ForAll(
+                x =>
+                {
+                    var product = GenerateParcel(x);
+                    concurrentData.TryAdd(product.ParcelId, product);
+                });
+
+        Data = concurrentData.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
-    private Parcel GenerateParcel()
+    private Parcel GenerateParcel(int index)
     {
         var order = orderGenerator.Data.ElementAt(_random.Next(orderGenerator.Data.Count)).Value;
 
         return new Parcel
         {
-            ParcelId = new ParcelId(Guid.NewGuid().ToString()),
+            ParcelId = new ParcelId($"PA_{index}_{GenerateHexadecimal(10)}"),
             ParcelStatus = (ParcelStatus)_random.Next(0, 4),
             OrderId = order.OrderId,
             Products = order.Products.Select(x => new ParcelProduct()
