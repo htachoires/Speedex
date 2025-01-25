@@ -29,6 +29,7 @@ public class InMemoryOrderRepository : IOrderRepository
         }
 
         return _orders.Values
+            .Where(x => query.ProductId is null || x.Products.Any(p => p.ProductId == query.ProductId))
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();

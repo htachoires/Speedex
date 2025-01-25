@@ -9,6 +9,7 @@ public static class GetOrdersQueryMapper
         return new GetOrdersDto
         {
             OrderId = query.OrderId,
+            ProductId = query.ProductId,
             PageIndex = query.PageIndex,
             PageSize = query.PageSize
         };
