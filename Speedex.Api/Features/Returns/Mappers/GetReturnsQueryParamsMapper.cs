@@ -8,14 +8,11 @@ public static class GetReturnsQueryParamsMapper
 {
     public static GetReturnsQuery ToQuery(this GetReturnsQueryParams queryParams)
     {
-        const int defaultPageIndex = 1;
-        const int defaultPageSize = 100;
-
         return new GetReturnsQuery
         {
             ReturnId = queryParams.ReturnId is not null ? new ReturnId(queryParams.ReturnId) : null,
-            PageIndex = queryParams.PageIndex ?? defaultPageIndex,
-            PageSize = queryParams.PageSize ?? defaultPageSize,
+            PageIndex = queryParams.PageIndex,
+            PageSize = queryParams.PageSize,
         };
     }
 }

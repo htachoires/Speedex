@@ -6,12 +6,15 @@ public static class GetOrdersQueryMapper
 {
     public static GetOrdersDto ToGetOrdersDto(this GetOrdersQuery query)
     {
+        const int defaultPageIndex = 1;
+        const int defaultPageSize = 100;
+
         return new GetOrdersDto
         {
             OrderId = query.OrderId,
             ProductId = query.ProductId,
-            PageIndex = query.PageIndex,
-            PageSize = query.PageSize
+            PageIndex = query.PageIndex ?? defaultPageIndex,
+            PageSize = query.PageSize ?? defaultPageSize,
         };
     }
 }

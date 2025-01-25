@@ -8,14 +8,11 @@ public static class GetParcelsQueryParamsMapper
 {
     public static GetParcelsQuery ToQuery(this GetParcelsQueryParams queryParams)
     {
-        const int defaultPageIndex = 1;
-        const int defaultPageSize = 100;
-
         return new GetParcelsQuery
         {
             ParcelId = queryParams.ParcelId is not null ? new ParcelId(queryParams.ParcelId) : null,
-            PageIndex = queryParams.PageIndex ?? defaultPageIndex,
-            PageSize = queryParams.PageSize ?? defaultPageSize,
+            PageIndex = queryParams.PageIndex,
+            PageSize = queryParams.PageSize,
         };
     }
 }

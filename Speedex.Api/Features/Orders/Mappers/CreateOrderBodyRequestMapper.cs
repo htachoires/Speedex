@@ -1,6 +1,7 @@
 using Speedex.Api.Features.Orders.Requests;
 using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
+using Speedex.Domain.Products;
 
 namespace Speedex.Api.Features.Orders.Mappers;
 
@@ -10,12 +11,12 @@ public static class CreateOrderBodyRequestMapper
     {
         return new CreateOrderCommand
         {
-            Products = bodyRequest.Products!.Select(x => new CreateOrderCommand.Product
+            Products = bodyRequest.Products!.Select(
+                x => new CreateOrderCommand.Product
                 {
-                    ProductId = x.ProductId!,
+                    ProductId = new ProductId(x.ProductId!),
                     Quantity = x.Quantity!.Value,
-                }
-            ),
+                }),
             DeliveryType = Enum.Parse<DeliveryType>(bodyRequest.DeliveryType!, true),
             Recipient = new CreateOrderCommand.CreateOrderRecipient
             {

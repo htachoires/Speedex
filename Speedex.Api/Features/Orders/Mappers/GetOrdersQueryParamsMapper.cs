@@ -9,15 +9,12 @@ public static class GetOrdersQueryParamsMapper
 {
     public static GetOrdersQuery ToQuery(this GetOrdersQueryParams queryParams)
     {
-        const int defaultPageIndex = 1;
-        const int defaultPageSize = 100;
-
         return new GetOrdersQuery
         {
             OrderId = queryParams.OrderId is not null ? new OrderId(queryParams.OrderId) : null,
             ProductId = queryParams.ProductId is not null ? new ProductId(queryParams.ProductId) : null,
-            PageIndex = queryParams.PageIndex ?? defaultPageIndex,
-            PageSize = queryParams.PageSize ?? defaultPageSize,
+            PageIndex = queryParams.PageIndex,
+            PageSize = queryParams.PageSize,
         };
     }
 }

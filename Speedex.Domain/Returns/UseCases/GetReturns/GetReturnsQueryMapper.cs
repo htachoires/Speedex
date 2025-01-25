@@ -6,11 +6,14 @@ public static class GetReturnsQueryMapper
 {
     public static GetReturnsDto ToGetReturnsDto(this GetReturnsQuery query)
     {
+        const int defaultPageIndex = 1;
+        const int defaultPageSize = 100;
+
         return new GetReturnsDto
         {
             ReturnId = query.ReturnId,
-            PageIndex = query.PageIndex,
-            PageSize = query.PageSize
+            PageIndex = query.PageIndex ?? defaultPageIndex,
+            PageSize = query.PageSize ?? defaultPageSize
         };
     }
 }
