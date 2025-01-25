@@ -10,10 +10,12 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
     private readonly Random _random = new();
 
-    private List<string> _firstNames =
+    #region Fake Data
+
+    private readonly List<string> _firstNames =
         ["Emma", "Liam", "Olivia", "Noah", "Sophia", "James", "Isabella", "Elijah", "Ava", "Lucas"];
 
-    private List<string> _lastNames =
+    private readonly List<string> _lastNames =
         ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Martinez", "Hernandez"];
 
     private readonly List<Tuple<string, List<string>, string>> _locations =
@@ -35,6 +37,8 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
     private readonly List<string> _streetParts =
         ["Main", "Park", "Oak", "Pine", "Elm", "Maple", "Sunset", "Hill", "River", "Lake"];
+
+    #endregion Fake Data
 
     public void GenerateData(int nbElements)
     {
@@ -79,11 +83,12 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
         return new Order
         {
             OrderId = new OrderId($"OR_{index}_{GenerateHexadecimal(10)}"),
-            Products = productIds.Select(x => new OrderProduct
-            {
-                ProductId = x,
-                Quantity = _random.Next(1, 5),
-            }).ToList(),
+            Products = productIds.Select(
+                x => new OrderProduct
+                {
+                    ProductId = x,
+                    Quantity = _random.Next(1, 5),
+                }).ToList(),
             DeliveryType = (DeliveryType)_random.Next(0, 2),
             Recipient = new Recipient
             {
