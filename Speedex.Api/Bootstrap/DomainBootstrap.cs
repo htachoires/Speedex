@@ -5,6 +5,8 @@ using Speedex.Domain.Parcels.UseCases.CreateParcel;
 using Speedex.Domain.Parcels.UseCases.GetParcels;
 using Speedex.Domain.Products.UseCases.CreateProduct;
 using Speedex.Domain.Products.UseCases.GetProducts;
+using Speedex.Domain.Returns.UseCases.CreateReturn;
+using Speedex.Domain.Returns.UseCases.GetReturns;
 
 namespace Speedex.Api.Bootstrap;
 
@@ -24,6 +26,7 @@ public static class DomainBootstrap
         services
             .AddScoped<ICommandHandler<CreateOrderCommand, CreateOrderResult>, CreateOrderCommandHandler>()
             .AddScoped<ICommandHandler<CreateParcelCommand, CreateParcelResult>, CreateParcelCommandHandler>()
+            .AddScoped<ICommandHandler<CreateReturnCommand, CreateReturnResult>, CreateReturnCommandHandler>()
             .AddScoped<ICommandHandler<CreateProductCommand, CreateProductResult>, CreateProductCommandHandler>();
 
         return services;
@@ -34,6 +37,7 @@ public static class DomainBootstrap
         services
             .AddScoped<IQueryHandler<GetOrdersQuery, GetOrdersQueryResult>, GetOrdersQueryHandler>()
             .AddScoped<IQueryHandler<GetParcelsQuery, GetParcelsQueryResult>, GetParcelsQueryHandler>()
+            .AddScoped<IQueryHandler<GetReturnsQuery, GetReturnsQueryResult>, GetReturnsQueryHandler>()
             .AddScoped<IQueryHandler<GetProductsQuery, GetProductsQueryResult>, GetProductsQueryHandler>();
 
         return services;

@@ -5,6 +5,8 @@ using Speedex.Api.Features.Parcels.Requests;
 using Speedex.Api.Features.Parcels.Validators;
 using Speedex.Api.Features.Products.Requests;
 using Speedex.Api.Features.Products.Validators;
+using Speedex.Api.Features.Returns.Requests;
+using Speedex.Api.Features.Returns.Validators;
 using Speedex.Data;
 using Speedex.Data.Generators;
 using Speedex.Domain.Orders;
@@ -49,6 +51,11 @@ public static class ApiBootstrap
             .AddSingleton<IValidator<CreateParcelBodyRequest>, CreateParcelValidator>()
             .AddSingleton<IValidator<CreateParcelBodyRequest.ParcelProductCreateParcelBodyRequest>, ParcelProductCreateParcelBodyRequestValidator>()
             .AddSingleton<IValidator<GetParcelsQueryParams>, GetParcelsValidator>();
+
+        services
+            .AddSingleton<IValidator<CreateReturnBodyRequest>, CreateReturnValidator>()
+            .AddSingleton<IValidator<CreateReturnBodyRequest.CreateReturnBodyRequestReturnProduct>, CreateReturnBodyRequestReturnProductValidator>()
+            .AddSingleton<IValidator<GetReturnsQueryParams>, GetReturnsValidator>();
 
         services
             .AddSingleton<IValidator<CreateProductBodyRequest>, CreateProductValidator>()

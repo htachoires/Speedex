@@ -11,7 +11,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
     {
         var now = DateTime.Now;
 
-        var newCommand = new Product
+        var createdProduct = new Product
         {
             ProductId = new ProductId(Guid.NewGuid().ToString()),
             Name = command.Name,
@@ -40,7 +40,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
             UpdateDate = now,
         };
 
-        var result = productRepository.UpsertProduct(newCommand);
+        var result = productRepository.UpsertProduct(createdProduct);
 
         if (result.Status != UpsertProductResult.UpsertStatus.Success)
         {
@@ -52,7 +52,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
 
         return new CreateProductResult
         {
-            ProductId = newCommand.ProductId,
+            ProductId = createdProduct.ProductId,
             Success = true,
         };
     }

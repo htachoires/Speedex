@@ -12,7 +12,7 @@ public class CreateOrderCommandHandler(IOrderRepository orderRepository)
     {
         var now = DateTime.Now;
 
-        var newCommand = new Order
+        var createdOrder = new Order
         {
             OrderId = new OrderId(Guid.NewGuid().ToString()),
             Products = command.Products.Select(x => new OrderProduct
@@ -36,7 +36,7 @@ public class CreateOrderCommandHandler(IOrderRepository orderRepository)
             UpdateDate = now
         };
 
-        var result = orderRepository.UpsertOrder(newCommand);
+        var result = orderRepository.UpsertOrder(createdOrder);
 
         if (result.Status != UpsertOrderResult.UpsertStatus.Success)
         {
@@ -48,7 +48,7 @@ public class CreateOrderCommandHandler(IOrderRepository orderRepository)
 
         return new CreateOrderResult
         {
-            OrderId = newCommand.OrderId,
+            OrderId = createdOrder.OrderId,
             Success = true,
         };
     }

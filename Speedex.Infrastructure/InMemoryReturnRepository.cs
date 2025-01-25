@@ -8,11 +8,11 @@ public class InMemoryReturnRepository : IReturnRepository
 {
     private readonly Dictionary<ReturnId, Return> _orders = new();
 
-    public UpsertReturnResult UpsertReturn(Return order)
+    public UpsertReturnResult UpsertReturn(Return @return)
     {
-        if (!_orders.TryAdd(order.ReturnId, order))
+        if (!_orders.TryAdd(@return.ReturnId, @return))
         {
-            _orders[order.ReturnId] = order;
+            _orders[@return.ReturnId] = @return;
         }
 
         return new UpsertReturnResult
@@ -25,7 +25,7 @@ public class InMemoryReturnRepository : IReturnRepository
     {
         if (query.ReturnId is not null)
         {
-            return _orders.TryGetValue(query.ReturnId, out var order) ? new List<Return> { order } : new List<Return>();
+            return _orders.TryGetValue(query.ReturnId, out var @return) ? new List<Return> { @return } : new List<Return>();
         }
 
         return _orders.Values

@@ -7,7 +7,7 @@ namespace Speedex.Domain.Returns;
 public record Return
 {
     public ReturnId ReturnId { get; init; }
-    public ReturnStatus Status { get; init; }
+    public ReturnStatus ReturnStatus { get; init; }
     public ParcelId ParcelId { get; init; }
     public OrderId OrderId { get; init; }
     public IEnumerable<ReturnProduct> Products { get; init; }
@@ -23,6 +23,7 @@ public record ReturnProduct
 
 public enum ReturnStatus
 {
+    Created,
     Receipt,
     Qualified,
     Archived

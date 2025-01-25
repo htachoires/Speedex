@@ -8,11 +8,11 @@ public class InMemoryProductRepository : IProductRepository
 {
     private readonly Dictionary<ProductId, Product> _orders = new();
 
-    public UpsertProductResult UpsertProduct(Product order)
+    public UpsertProductResult UpsertProduct(Product product)
     {
-        if (!_orders.TryAdd(order.ProductId, order))
+        if (!_orders.TryAdd(product.ProductId, product))
         {
-            _orders[order.ProductId] = order;
+            _orders[product.ProductId] = product;
         }
 
         return new UpsertProductResult
@@ -25,7 +25,7 @@ public class InMemoryProductRepository : IProductRepository
     {
         if (query.ProductId is not null)
         {
-            return _orders.TryGetValue(query.ProductId, out var order) ? new List<Product> { order } : new List<Product>();
+            return _orders.TryGetValue(query.ProductId, out var product) ? new List<Product> { product } : new List<Product>();
         }
 
         return _orders.Values

@@ -11,7 +11,7 @@ public class CreateParcelCommandHandler(IParcelRepository parcelRepository)
     {
         var now = DateTime.Now;
 
-        var newCommand = new Parcel
+        var createdParcel = new Parcel
         {
             ParcelId = new ParcelId(Guid.NewGuid().ToString()),
             ParcelStatus = ParcelStatus.Created,
@@ -25,7 +25,7 @@ public class CreateParcelCommandHandler(IParcelRepository parcelRepository)
             UpdateDate = now
         };
 
-        var result = parcelRepository.UpsertParcel(newCommand);
+        var result = parcelRepository.UpsertParcel(createdParcel);
 
         if (result.Status != UpsertParcelResult.UpsertStatus.Success)
         {
@@ -37,7 +37,7 @@ public class CreateParcelCommandHandler(IParcelRepository parcelRepository)
 
         return new CreateParcelResult
         {
-            ParcelId = newCommand.ParcelId,
+            ParcelId = createdParcel.ParcelId,
             Success = true,
         };
     }

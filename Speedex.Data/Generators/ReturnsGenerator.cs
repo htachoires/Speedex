@@ -25,6 +25,7 @@ public class ReturnsGenerator(IDataGenerator<ParcelId, Parcel> parcelsGenerator)
             ReturnId = new ReturnId(Guid.NewGuid().ToString()),
             ParcelId = parcel.ParcelId,
             OrderId = parcel.OrderId,
+            ReturnStatus = (ReturnStatus)_random.Next(0, 2),
             Products = parcel.Products.Select(x => new ReturnProduct()
             {
                 ProductId = x.ProductId,

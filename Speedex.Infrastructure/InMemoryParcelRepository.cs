@@ -8,11 +8,11 @@ public class InMemoryParcelRepository : IParcelRepository
 {
     private readonly Dictionary<ParcelId, Parcel> _orders = new();
 
-    public UpsertParcelResult UpsertParcel(Parcel order)
+    public UpsertParcelResult UpsertParcel(Parcel parcel)
     {
-        if (!_orders.TryAdd(order.ParcelId, order))
+        if (!_orders.TryAdd(parcel.ParcelId, parcel))
         {
-            _orders[order.ParcelId] = order;
+            _orders[parcel.ParcelId] = parcel;
         }
 
         return new UpsertParcelResult
@@ -25,7 +25,7 @@ public class InMemoryParcelRepository : IParcelRepository
     {
         if (query.ParcelId is not null)
         {
-            return _orders.TryGetValue(query.ParcelId, out var order) ? new List<Parcel> { order } : new List<Parcel>();
+            return _orders.TryGetValue(query.ParcelId, out var parcel) ? new List<Parcel> { parcel } : new List<Parcel>();
         }
 
         return _orders.Values
