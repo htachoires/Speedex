@@ -23,7 +23,7 @@ public class ParcelsGenerator(IDataGenerator<OrderId, Order> orderGenerator) : I
         return new Parcel
         {
             ParcelId = new ParcelId(Guid.NewGuid().ToString()),
-            ParcelStatus = ParcelStatus.Preparing,
+            ParcelStatus = (ParcelStatus)_random.Next(0, 4),
             OrderId = order.OrderId,
             Products = order.Products.Select(x => new ParcelProduct()
             {

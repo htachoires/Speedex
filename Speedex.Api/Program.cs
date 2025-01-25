@@ -9,7 +9,10 @@ builder.Services.AddSwaggerGen(options =>
     options.CustomSchemaIds(type =>  type.FullName.Replace("+", "."));
 });
 builder.Services.AddControllers();
-builder.Services.RegisterServices();
+builder.Services
+    .RegisterDomainServices()
+    .RegisterApiServices()
+    .RegisterInfrastructureServices();
 
 var app = builder.Build();
 

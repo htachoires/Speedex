@@ -45,7 +45,7 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
     private Order GenerateOrder()
     {
-        var nbProducts = _random.Next(0, 10);
+        var nbProducts = _random.Next(1, 10);
         var firstName = _firstNames[_random.Next(0, _firstNames.Count - 1)];
         var lastName = _lastNames[_random.Next(0, _lastNames.Count - 1)];
         var location = _locations[_random.Next(0, _locations.Count - 1)];

@@ -1,4 +1,3 @@
-using Speedex.Domain.Orders;
 using Speedex.Domain.Products.Repositories.Dtos;
 
 namespace Speedex.Domain.Products.Repositories;

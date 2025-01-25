@@ -17,6 +17,7 @@ public record ParcelId(string Value);
 
 public enum ParcelStatus
 {
+    Created,
     Preparing,
     Sending,
     Delivered,

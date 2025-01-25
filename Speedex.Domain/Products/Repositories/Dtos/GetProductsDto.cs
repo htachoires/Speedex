@@ -1,5 +1,3 @@
-using Speedex.Domain.Orders;
-
 namespace Speedex.Domain.Products.Repositories.Dtos;
 
 public record GetProductsDto
