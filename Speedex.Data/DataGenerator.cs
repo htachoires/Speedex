@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Parcels;
@@ -17,15 +18,18 @@ public class DataGenerator(
     IProductRepository productRepository,
     IReturnRepository returnRepository,
     IOrderRepository orderRepository,
-    IParcelRepository parcelRepository)
+    IParcelRepository parcelRepository,
+    IOptions<GenerateOptions> generateOptions)
     : IDataGenerator
 {
     public void GenerateData()
     {
-        productGenerator.GenerateData(50_000);
-        orderGenerator.GenerateData(10_000);
-        parcelGenerator.GenerateData(8_000);
-        returnGenerator.GenerateData(3_000);
+        var options = generateOptions.Value;
+
+        productGenerator.GenerateData(options.NbProductElements);
+        orderGenerator.GenerateData(options.NbOrderElements);
+        parcelGenerator.GenerateData(options.NbParcelElements);
+        returnGenerator.GenerateData(options.NbReturnElements);
 
         productGenerator.Data.Values
             .ToList()

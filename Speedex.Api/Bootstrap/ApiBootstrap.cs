@@ -18,16 +18,16 @@ namespace Speedex.Api.Bootstrap;
 
 public static class ApiBootstrap
 {
-    public static IServiceCollection RegisterApiServices(this IServiceCollection services)
+    public static IServiceCollection RegisterApiServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         services
             .RegisterValidators()
-            .RegisterDataGenerators();
+            .RegisterDataGenerators(configuration);
 
         return services;
     }
 
-    private static IServiceCollection RegisterDataGenerators(this IServiceCollection services)
+    private static IServiceCollection RegisterDataGenerators(this IServiceCollection services, ConfigurationManager configuration)
     {
         services
             .AddSingleton<IDataGenerator, DataGenerator>()
@@ -35,6 +35,9 @@ public static class ApiBootstrap
             .AddSingleton<IDataGenerator<ParcelId, Parcel>, ParcelsGenerator>()
             .AddSingleton<IDataGenerator<ReturnId, Return>, ReturnsGenerator>()
             .AddSingleton<IDataGenerator<ProductId, Product>, ProductsGenerator>();
+
+        services
+            .Configure<GenerateOptions>(configuration.GetSection(GenerateOptions.SectionName));
 
         return services;
     }

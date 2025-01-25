@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddLogging();
 builder.Services
     .RegisterDomainServices()
-    .RegisterApiServices()
+    .RegisterApiServices(builder.Configuration)
     .RegisterInfrastructureServices();
 
 builder.Services.AddHostedService<DataGeneratorHostedService>();

@@ -8,5 +8,6 @@ public interface IDataGenerator
 public interface IDataGenerator<TKey, TValue> where TKey : notnull
 {
     Dictionary<TKey, TValue> Data { get; }
+
     void GenerateData(int nbElements);
 }
