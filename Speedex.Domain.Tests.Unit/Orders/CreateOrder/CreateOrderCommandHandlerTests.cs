@@ -30,6 +30,37 @@ public class CreateOrderCommandHandlerTests
         Assert.NotNull(result.OrderId);
     }
 
+    [Theory]
+    [InlineData("Doe", "DOE")]
+    [InlineData("test", "TEST")]
+    public void Handle_Should_UpperCase_LastName_When_Order_Is_Created_Successfully(string lastName, string expectedLastName)
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        Order? order = null;
+        orderRepository
+            .UpsertOrder(Arg.Do<Order>(
+                or =>
+                {
+                    order = or;
+                }))
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+
+        var command = ACreateOrderCommand
+            .WithRecipient(ACreateOrderRecipient.WithLastName(lastName))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository);
+
+        // Act
+        var result = handler.Handle(command);
+
+        // Assert
+        Assert.NotNull(order);
+        Assert.Equal(expectedLastName, order.Recipient.LastName);
+    }
+
     [Fact]
     public void Handle_Should_Return_Failure_Result_When_Order_Creation_Fails()
     {
