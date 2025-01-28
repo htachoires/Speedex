@@ -13,7 +13,7 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
     #region Fake Data
 
     private readonly List<string> _firstNames =
-        ["Emma", "Liam", "Olivia", "Noah", "Sophia", "James", "Isabella", "Elijah", "Ava", "Lucas"];
+        ["Emma", "Liam", "Olivia", "Noah", "Sophia", "James", "Isabella", "Elijah", "Ava", "Lucas", "Margaux", "Thomas", "Ambre", "Ana"];
 
     private readonly List<string> _lastNames =
         ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Martinez", "Hernandez"];
@@ -29,7 +29,8 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
         new("Italy", ["Rome", "Milan", "Venice"], "39"),
         new("South Africa", ["Cape Town", "Johannesburg", "Durban"], "27"),
         new("Thailand", ["Bangkok", "Chiang Mai", "Phuket"], "66"),
-        new("UAE", ["Dubai", "Abu Dhabi", "Sharjah"], "971")
+        new("UAE", ["Dubai", "Abu Dhabi", "Sharjah"], "971"),
+        new("Spain", ["Madrid", "Tenerife", "Barcelona"], "34"),
     ];
 
     private readonly List<string> _streetTypes =

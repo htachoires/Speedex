@@ -6,9 +6,12 @@ public static class CreateOrderCommandMapper
     {
         var now = DateTime.Now;
 
+        //Tip: we can see stored variable in the debug console
+        var orderId = new OrderId(Guid.NewGuid().ToString());
+
         return new Order
         {
-            OrderId = new OrderId(Guid.NewGuid().ToString()),
+            OrderId = orderId,
             Products = command.Products.Select(
                 x => new OrderProduct
                 {
