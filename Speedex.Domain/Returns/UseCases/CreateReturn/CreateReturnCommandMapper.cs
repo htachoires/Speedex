@@ -10,6 +10,7 @@ public static class CreateReturnCommandMapper
         {
             ReturnId = new ReturnId(Guid.NewGuid().ToString()),
             ReturnStatus = ReturnStatus.Created,
+            ParcelId = command.ParcelId,
             OrderId = command.OrderId,
             Products = command.Products.Select(
                 x => new ReturnProduct
