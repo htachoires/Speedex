@@ -2,7 +2,6 @@ namespace Speedex.Api.Features.Returns.Requests;
 
 public record CreateReturnBodyRequest
 {
-    public string? ReturnId { get; init; }
     public string? ParcelId { get; init; }
     public string? OrderId { get; init; }
     public IEnumerable<CreateReturnBodyRequestReturnProduct>? Products { get; init; }

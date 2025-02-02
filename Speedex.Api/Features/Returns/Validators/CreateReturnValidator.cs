@@ -7,9 +7,6 @@ public class CreateReturnValidator : AbstractValidator<CreateReturnBodyRequest>
 {
     public CreateReturnValidator(IValidator<CreateReturnBodyRequest.CreateReturnBodyRequestReturnProduct> productValidator)
     {
-        RuleFor(x => x.ReturnId)
-            .NotEmpty();
-
         RuleFor(x => x.OrderId)
             .NotEmpty();
 
