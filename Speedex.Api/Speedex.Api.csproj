@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Speedex.Infrastructure\Speedex.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="Speedex.Api.Tests.Integration" />
+    </ItemGroup>
+
 </Project>

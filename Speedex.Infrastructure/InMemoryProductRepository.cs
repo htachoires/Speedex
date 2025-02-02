@@ -6,13 +6,13 @@ namespace Speedex.Infrastructure;
 
 public class InMemoryProductRepository : IProductRepository
 {
-    private readonly Dictionary<ProductId, Product> _orders = new();
+    private readonly Dictionary<ProductId, Product> _products = new();
 
     public UpsertProductResult UpsertProduct(Product product)
     {
-        if (!_orders.TryAdd(product.ProductId, product))
+        if (!_products.TryAdd(product.ProductId, product))
         {
-            _orders[product.ProductId] = product;
+            _products[product.ProductId] = product;
         }
 
         return new UpsertProductResult
@@ -25,10 +25,10 @@ public class InMemoryProductRepository : IProductRepository
     {
         if (query.ProductId is not null)
         {
-            return _orders.TryGetValue(query.ProductId, out var product) ? new List<Product> { product } : new List<Product>();
+            return _products.TryGetValue(query.ProductId, out var product) ? new List<Product> { product } : new List<Product>();
         }
 
-        return _orders.Values
+        return _products.Values
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();

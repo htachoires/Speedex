@@ -6,13 +6,13 @@ namespace Speedex.Infrastructure;
 
 public class InMemoryReturnRepository : IReturnRepository
 {
-    private readonly Dictionary<ReturnId, Return> _orders = new();
+    private readonly Dictionary<ReturnId, Return> _returns = new();
 
     public UpsertReturnResult UpsertReturn(Return @return)
     {
-        if (!_orders.TryAdd(@return.ReturnId, @return))
+        if (!_returns.TryAdd(@return.ReturnId, @return))
         {
-            _orders[@return.ReturnId] = @return;
+            _returns[@return.ReturnId] = @return;
         }
 
         return new UpsertReturnResult
@@ -25,10 +25,10 @@ public class InMemoryReturnRepository : IReturnRepository
     {
         if (query.ReturnId is not null)
         {
-            return _orders.TryGetValue(query.ReturnId, out var @return) ? new List<Return> { @return } : new List<Return>();
+            return _returns.TryGetValue(query.ReturnId, out var @return) ? new List<Return> { @return } : new List<Return>();
         }
 
-        return _orders.Values
+        return _returns.Values
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();

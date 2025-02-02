@@ -30,3 +30,8 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+namespace Speedex.Api
+{
+    public class Program { }
+}

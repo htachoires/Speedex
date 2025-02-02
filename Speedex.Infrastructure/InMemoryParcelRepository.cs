@@ -6,13 +6,13 @@ namespace Speedex.Infrastructure;
 
 public class InMemoryParcelRepository : IParcelRepository
 {
-    private readonly Dictionary<ParcelId, Parcel> _orders = new();
+    private readonly Dictionary<ParcelId, Parcel> _parcels = new();
 
     public UpsertParcelResult UpsertParcel(Parcel parcel)
     {
-        if (!_orders.TryAdd(parcel.ParcelId, parcel))
+        if (!_parcels.TryAdd(parcel.ParcelId, parcel))
         {
-            _orders[parcel.ParcelId] = parcel;
+            _parcels[parcel.ParcelId] = parcel;
         }
 
         return new UpsertParcelResult
@@ -25,10 +25,10 @@ public class InMemoryParcelRepository : IParcelRepository
     {
         if (query.ParcelId is not null)
         {
-            return _orders.TryGetValue(query.ParcelId, out var parcel) ? new List<Parcel> { parcel } : new List<Parcel>();
+            return _parcels.TryGetValue(query.ParcelId, out var parcel) ? new List<Parcel> { parcel } : new List<Parcel>();
         }
 
-        return _orders.Values
+        return _parcels.Values
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();
