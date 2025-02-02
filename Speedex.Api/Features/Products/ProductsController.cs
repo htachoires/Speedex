@@ -25,7 +25,7 @@ public class ProductsController : ControllerBase
 
         var commandResult = handler.Handle(bodyRequest.ToCommand());
 
-        return Created(commandResult.ProductId.Value, null);
+        return Created($"/Products?ProductId={commandResult.ProductId.Value}", null);
     }
 
     [HttpGet]

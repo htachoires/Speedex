@@ -1,9 +1,10 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using Speedex.Api.Features.Returns.Requests;
 using Speedex.Api.Features.Returns.Responses;
 
-namespace Speedex.Api.Tests.Integration;
+namespace Speedex.Api.Tests.Integration.Features.Returns;
 
 public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
@@ -16,7 +17,7 @@ public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task CreateReturn_ShouldReturnCreatedAndRessourceLocationInHeaders()
+    public async Task CreateReturn_Should_ReturnCreatedStatusCode_And_FindCreatedReturn()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
@@ -39,7 +40,7 @@ public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Progr
         var response = await httpClient.PostAsync("/Returns", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
-        response.EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var location = response.Headers.Location.ToString();
 

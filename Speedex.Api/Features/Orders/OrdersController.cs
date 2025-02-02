@@ -25,7 +25,7 @@ public class OrdersController : ControllerBase
 
         var commandResult = handler.Handle(bodyRequest.ToCommand());
 
-        return Created(commandResult.OrderId.Value, null);
+        return Created($"/Orders?OrderId={commandResult.OrderId.Value}", null);
     }
 
     [HttpGet]

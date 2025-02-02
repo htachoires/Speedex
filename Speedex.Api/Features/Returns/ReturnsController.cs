@@ -25,7 +25,7 @@ public class ReturnsController : ControllerBase
 
         var commandResult = handler.Handle(bodyRequest.ToCommand());
 
-        return Created("/Returns?ReturnId=" + commandResult.ReturnId.Value, null);
+        return Created($"/Returns?ReturnId={commandResult.ReturnId.Value}", null);
     }
 
     [HttpGet]

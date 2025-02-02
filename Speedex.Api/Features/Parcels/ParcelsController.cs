@@ -25,7 +25,7 @@ public class ParcelsController : ControllerBase
 
         var commandResult = handler.Handle(bodyRequest.ToCommand());
 
-        return Created(commandResult.ParcelId.Value, null);
+        return Created($"/Parcels?ParcelId={commandResult.ParcelId.Value}", null);
     }
 
     [HttpGet]
