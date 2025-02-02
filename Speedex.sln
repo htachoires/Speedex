@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Tests.Tools", "Spee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Domain.Tests.Unit", "Speedex.Domain.Tests.Unit\Speedex.Domain.Tests.Unit.csproj", "{E4AB3F5D-BA56-4D72-9006-DF4C70523FC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speedex.Api.Tests.Integration", "Speedex.Api.Tests.Integration\Speedex.Api.Tests.Integration.csproj", "{C04F1687-A3E6-492C-9FCC-9349AD230B0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{E4AB3F5D-BA56-4D72-9006-DF4C70523FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4AB3F5D-BA56-4D72-9006-DF4C70523FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4AB3F5D-BA56-4D72-9006-DF4C70523FC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04F1687-A3E6-492C-9FCC-9349AD230B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04F1687-A3E6-492C-9FCC-9349AD230B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04F1687-A3E6-492C-9FCC-9349AD230B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04F1687-A3E6-492C-9FCC-9349AD230B0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D4640D3B-E7F5-4AED-B183-2C4FD50220D3} = {2EBD3C07-3C91-438C-B53D-21E29F025307}
@@ -61,5 +67,6 @@ Global
 		{FA145CCF-9933-4137-ACF7-7BBEA20BE5F3} = {D6B072E4-B037-41BA-8156-4FF9DE81F9D6}
 		{DC153026-1051-45B5-A8A4-248A82642150} = {D6B072E4-B037-41BA-8156-4FF9DE81F9D6}
 		{E4AB3F5D-BA56-4D72-9006-DF4C70523FC5} = {D6B072E4-B037-41BA-8156-4FF9DE81F9D6}
+		{C04F1687-A3E6-492C-9FCC-9349AD230B0A} = {D6B072E4-B037-41BA-8156-4FF9DE81F9D6}
 	EndGlobalSection
 EndGlobal
