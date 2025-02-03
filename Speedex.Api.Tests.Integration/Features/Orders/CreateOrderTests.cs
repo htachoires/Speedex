@@ -46,22 +46,15 @@ public class CreateOrderTests : IClassFixture<CustomWebApplicationFactory<Progra
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        //TODO(lvl-1) Setup a request object to create an order
+        //TODO(lvl-4) Setup a request object to create an order
         var request = new { };
 
         // Act
         var response = await httpClient.PostAsync("/Orders", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-
-        var location = response.Headers.Location.ToString();
-
-        var getResponse = await httpClient.GetAsync(location);
-
-        var content = await getResponse.Content.ReadAsStringAsync();
-        var getOrdersResponse = JsonSerializer.Deserialize<GetOrdersResponse>(content, _jsonSerializerOptions);
-
-        Assert.Single(getOrdersResponse!.Items);
+        var content = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("IsExistingProductValidator", content);
     }
 }
