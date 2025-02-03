@@ -1,3 +1,7 @@
+using Speedex.Domain.Orders;
+using Speedex.Domain.Returns;
+using Speedex.Domain.Returns.UseCases.CreateReturn;
+
 namespace Speedex.Domain.Tests.Unit.Returns.CreateReturn;
 
 public class CreateReturnMapperTests
@@ -6,35 +10,49 @@ public class CreateReturnMapperTests
     public void ToReturn_Should_Create_Return_With_Return_Status_Created_When_Mapping_Create_Return_Command()
     {
         //Arrange
-        //TODO: Instantiate CreateReturnCommand, used for your test (in act part)
+        CreateReturnCommand command = new CreateReturnCommand()
+        {
+            Products = [new CreateReturnCommand.ReturnProductCreateReturnCommand()]
+        };
 
         //Act
-        //TODO: call method that is under test
-        //var createdReturn = command.ToReturn();
+        var createdReturn = command.ToReturn();
 
         //Assert
-        //TODO: add the assertion to check return status
-        //Assert.Equal ?
-        //Assert.Null ?
-        //Assert.NotNull ?
+        Assert.Equal(ReturnStatus.Created, createdReturn.ReturnStatus);
     }
 
     [Fact]
     public void ToReturn_Should_Create_Return_With_Return_Id_Not_Null_When_Mapping_Create_Return_Command()
     {
         //Arrange
-        //TODO: Instantiate CreateReturnCommand, used for your test (in act part)
+        CreateReturnCommand command = new CreateReturnCommand()
+        {
+            Products = [new CreateReturnCommand.ReturnProductCreateReturnCommand()]
+        };
 
         //Act
-        //TODO: call method that is under test
-        //var createdReturn = command.ToReturn();
+        var createdReturn = command.ToReturn();
 
         //Assert
-        //TODO: add the assertion to check return status
-        //Assert.NotNull ?
-        //Assert.Null ?
-        //Assert.Equal ?
+        Assert.NotNull(createdReturn.ReturnId);
     }
 
-    //TODO: add missing tests for all field mapped in CreateReturnCommandMapper
+    [Fact]
+    public void ToReturn_Should_Create_Return_With_Order_Id_Not_Null_When_Mapping_Create_Return_Command()
+    {
+        //Arrange
+        CreateReturnCommand command = new CreateReturnCommand()
+        {
+            OrderId = new OrderId("OrderId"),
+            Products = [new CreateReturnCommand.ReturnProductCreateReturnCommand()]
+        };
+
+        //Act
+        var createdReturn = command.ToReturn();
+
+        //Assert
+        Assert.NotNull(createdReturn.OrderId);
+        Assert.Equal(new OrderId("OrderId"), createdReturn.OrderId);
+    }
 }
