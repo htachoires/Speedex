@@ -4,10 +4,16 @@ using Speedex.Domain.Products.Repositories.Dtos;
 
 namespace Speedex.Domain.Products.UseCases.CreateProduct;
 
-public class CreateProductCommandHandler(IProductRepository productRepository)
-    : ICommandHandler<CreateProductCommand, CreateProductResult>
+public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
-    public CreateProductResult Handle(CreateProductCommand command)
+    private readonly IProductRepository _productRepository;
+
+    public CreateProductCommandHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
+
+    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
 
@@ -40,7 +46,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
             UpdateDate = now,
         };
 
-        var result = productRepository.UpsertProduct(createdProduct);
+        var result = _productRepository.UpsertProduct(createdProduct);
 
         if (result.Status != UpsertProductResult.UpsertStatus.Success)
         {

@@ -13,33 +13,40 @@ namespace Speedex.Api.Features.Orders;
 public class OrdersController : ControllerBase
 {
     [HttpPost]
-    public IActionResult CreateOrder([FromBody] CreateOrderBodyRequest bodyRequest,
+    public async Task<IActionResult> CreateOrder(
+        [FromBody] CreateOrderBodyRequest bodyRequest,
         [FromServices] ICommandHandler<CreateOrderCommand, CreateOrderResult> handler,
         [FromServices] IValidator<CreateOrderBodyRequest> validator)
     {
-        var validationResult = validator.Validate(bodyRequest);
+        var validationResult = await validator.ValidateAsync(bodyRequest);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var commandResult = handler.Handle(bodyRequest.ToCommand());
+        var commandResult = await handler.Handle(bodyRequest.ToCommand());
+
+        if (!commandResult.Success)
+        {
+            return BadRequest(commandResult.Errors);
+        }
 
         return Created($"/Orders?OrderId={commandResult.OrderId.Value}", null);
     }
 
     [HttpGet]
-    public IActionResult GetOrders([FromQuery] GetOrdersQueryParams queryParams,
+    public async Task<IActionResult> GetOrders(
+        [FromQuery] GetOrdersQueryParams queryParams,
         [FromServices] IQueryHandler<GetOrdersQuery, GetOrdersQueryResult> handler,
         [FromServices] IValidator<GetOrdersQueryParams> validator)
     {
-        var validationResult = validator.Validate(queryParams);
+        var validationResult = await validator.ValidateAsync(queryParams);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var result = handler.Query(queryParams.ToQuery());
+        var result = await handler.Query(queryParams.ToQuery());
 
         return Ok(result.ToResponse());
     }

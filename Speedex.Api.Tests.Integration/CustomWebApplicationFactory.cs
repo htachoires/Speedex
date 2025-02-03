@@ -9,7 +9,7 @@ public class CustomWebApplicationFactory<TProgram>
     {
         builder.ConfigureServices(services =>
         {
-            //TODO: register custom services if needed
+            //Register custom services here if needed
         });
 
         builder.UseEnvironment("Development");

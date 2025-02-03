@@ -33,4 +33,9 @@ public class InMemoryParcelRepository : IParcelRepository
             .Take(query.PageSize)
             .ToList();
     }
+
+    public Task<bool> IsExistingParcel(ParcelId parcelId, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_parcels.ContainsKey(parcelId));
+    }
 }

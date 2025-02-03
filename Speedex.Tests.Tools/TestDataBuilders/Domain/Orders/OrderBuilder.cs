@@ -34,4 +34,10 @@ public class OrderBuilder
             UpdateDate = _updateDate,
         };
     }
+
+    public OrderBuilder Id(OrderId id)
+    {
+        _orderId = id;
+        return this;
+    }
 }

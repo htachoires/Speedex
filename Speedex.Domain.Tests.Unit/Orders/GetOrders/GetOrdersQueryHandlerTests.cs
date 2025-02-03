@@ -9,7 +9,7 @@ namespace Speedex.Domain.Tests.Unit.Orders.GetOrders;
 public class GetOrdersQueryHandlerTests
 {
     [Fact]
-    public void Query_Should_Return_All_Orders()
+    public async Task Query_Should_Return_All_Orders()
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
@@ -28,7 +28,7 @@ public class GetOrdersQueryHandlerTests
         var handler = new GetOrdersQueryHandler(orderRepository);
 
         // Act
-        var result = handler.Query(query);
+        var result = await handler.Query(query);
 
         // Assert
         Assert.Equal(orders.Count, result.Items.Count());

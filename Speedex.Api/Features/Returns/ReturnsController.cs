@@ -13,33 +13,40 @@ namespace Speedex.Api.Features.Returns;
 public class ReturnsController : ControllerBase
 {
     [HttpPost]
-    public IActionResult CreateReturn([FromBody] CreateReturnBodyRequest bodyRequest,
+    public async Task<IActionResult> CreateReturn(
+        [FromBody] CreateReturnBodyRequest bodyRequest,
         [FromServices] ICommandHandler<CreateReturnCommand, CreateReturnResult> handler,
         [FromServices] IValidator<CreateReturnBodyRequest> validator)
     {
-        var validationResult = validator.Validate(bodyRequest);
+        var validationResult = await validator.ValidateAsync(bodyRequest);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var commandResult = handler.Handle(bodyRequest.ToCommand());
+        var commandResult = await handler.Handle(bodyRequest.ToCommand());
+
+        if (!commandResult.Success)
+        {
+            return BadRequest(commandResult.Errors);
+        }
 
         return Created($"/Returns?ReturnId={commandResult.ReturnId.Value}", null);
     }
 
     [HttpGet]
-    public IActionResult GetReturns([FromQuery] GetReturnsQueryParams queryParams,
+    public async Task<IActionResult> GetReturns(
+        [FromQuery] GetReturnsQueryParams queryParams,
         [FromServices] IQueryHandler<GetReturnsQuery, GetReturnsQueryResult> handler,
         [FromServices] IValidator<GetReturnsQueryParams> validator)
     {
-        var validationResult = validator.Validate(queryParams);
+        var validationResult = await validator.ValidateAsync(queryParams);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var result = handler.Query(queryParams.ToQuery());
+        var result = await handler.Query(queryParams.ToQuery());
 
         return Ok(result.ToResponse());
     }

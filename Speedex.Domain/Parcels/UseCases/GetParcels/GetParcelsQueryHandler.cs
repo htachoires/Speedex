@@ -6,13 +6,10 @@ namespace Speedex.Domain.Parcels.UseCases.GetParcels;
 public class GetParcelsQueryHandler(IParcelRepository parcelRepository)
     : IQueryHandler<GetParcelsQuery, GetParcelsQueryResult>
 {
-    public GetParcelsQueryResult Query(GetParcelsQuery query)
+    public Task<GetParcelsQueryResult> Query(GetParcelsQuery query, CancellationToken cancellationToken = default)
     {
         var result = parcelRepository.GetParcels(query.ToGetParcelsDto());
 
-        return new GetParcelsQueryResult
-        {
-            Items = result
-        };
+        return Task.FromResult(new GetParcelsQueryResult { Items = result });
     }
 }

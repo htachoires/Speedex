@@ -6,13 +6,10 @@ namespace Speedex.Domain.Products.UseCases.GetProducts;
 public class GetProductsQueryHandler(IProductRepository productRepository)
     : IQueryHandler<GetProductsQuery, GetProductsQueryResult>
 {
-    public GetProductsQueryResult Query(GetProductsQuery query)
+    public Task<GetProductsQueryResult> Query(GetProductsQuery query, CancellationToken cancellationToken = default)
     {
         var result = productRepository.GetProducts(query.ToGetProductsDto());
 
-        return new GetProductsQueryResult
-        {
-            Items = result
-        };
+        return Task.FromResult(new GetProductsQueryResult { Items = result });
     }
 }

@@ -33,4 +33,9 @@ public class InMemoryProductRepository : IProductRepository
             .Take(query.PageSize)
             .ToList();
     }
+
+    public Task<bool> IsExistingProduct(ProductId productId, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_products.ContainsKey(productId));
+    }
 }

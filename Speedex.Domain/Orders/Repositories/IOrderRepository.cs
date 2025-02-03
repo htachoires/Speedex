@@ -4,6 +4,9 @@ namespace Speedex.Domain.Orders.Repositories;
 
 public interface IOrderRepository
 {
-    public UpsertOrderResult UpsertOrder(Order order);
-    public IEnumerable<Order> GetOrders(GetOrdersDto query);
+    UpsertOrderResult UpsertOrder(Order order);
+
+    IEnumerable<Order> GetOrders(GetOrdersDto query);
+
+    Task<bool> IsExistingOrder(OrderId orderId, CancellationToken cancellationToken = default);
 }

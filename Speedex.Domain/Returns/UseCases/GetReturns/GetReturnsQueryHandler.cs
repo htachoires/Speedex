@@ -6,13 +6,10 @@ namespace Speedex.Domain.Returns.UseCases.GetReturns;
 public class GetReturnsQueryHandler(IReturnRepository returnRepository)
     : IQueryHandler<GetReturnsQuery, GetReturnsQueryResult>
 {
-    public GetReturnsQueryResult Query(GetReturnsQuery query)
+    public Task<GetReturnsQueryResult> Query(GetReturnsQuery query, CancellationToken cancellationToken = default)
     {
         var result = returnRepository.GetReturns(query.ToGetReturnsDto());
 
-        return new GetReturnsQueryResult
-        {
-            Items = result
-        };
+        return Task.FromResult(new GetReturnsQueryResult { Items = result });
     }
 }

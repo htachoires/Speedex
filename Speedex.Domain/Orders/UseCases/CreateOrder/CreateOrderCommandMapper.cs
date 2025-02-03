@@ -22,7 +22,7 @@ public static class CreateOrderCommandMapper
             Recipient = new Recipient
             {
                 FirstName = command.Recipient.FirstName,
-                LastName = command.Recipient.LastName,
+                LastName = command.Recipient.LastName.ToUpper(),
                 Email = command.Recipient.Email,
                 PhoneNumber = command.Recipient.Phone,
                 Address = command.Recipient.Address,

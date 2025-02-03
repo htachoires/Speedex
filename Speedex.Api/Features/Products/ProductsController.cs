@@ -13,33 +13,40 @@ namespace Speedex.Api.Features.Products;
 public class ProductsController : ControllerBase
 {
     [HttpPost]
-    public IActionResult CreateProduct([FromBody] CreateProductBodyRequest bodyRequest,
+    public async Task<IActionResult> CreateProduct(
+        [FromBody] CreateProductBodyRequest bodyRequest,
         [FromServices] ICommandHandler<CreateProductCommand, CreateProductResult> handler,
         [FromServices] IValidator<CreateProductBodyRequest> validator)
     {
-        var validationResult = validator.Validate(bodyRequest);
+        var validationResult = await validator.ValidateAsync(bodyRequest);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var commandResult = handler.Handle(bodyRequest.ToCommand());
+        var commandResult = await handler.Handle(bodyRequest.ToCommand());
+
+        if (!commandResult.Success)
+        {
+            return BadRequest(commandResult.Errors);
+        }
 
         return Created($"/Products?ProductId={commandResult.ProductId.Value}", null);
     }
 
     [HttpGet]
-    public IActionResult GetProducts([FromQuery] GetProductsQueryParams queryParams,
+    public async Task<IActionResult> GetProducts(
+        [FromQuery] GetProductsQueryParams queryParams,
         [FromServices] IQueryHandler<GetProductsQuery, GetProductsQueryResult> handler,
         [FromServices] IValidator<GetProductsQueryParams> validator)
     {
-        var validationResult = validator.Validate(queryParams);
+        var validationResult = await validator.ValidateAsync(queryParams);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var result = handler.Query(queryParams.ToQuery());
+        var result = await handler.Query(queryParams.ToQuery());
 
         return Ok(result.ToResponse());
     }

@@ -1,10 +1,10 @@
 namespace Speedex.Domain.Commons;
 
-public interface IQueryHandler<in TQuery, out TQueryResult>
+public interface IQueryHandler<in TQuery, TQueryResult>
     where TQuery : IQuery
     where TQueryResult : IQueryResult
 {
-    TQueryResult Query(TQuery command);
+    Task<TQueryResult> Query(TQuery command, CancellationToken cancellationToken = default);
 }
 
 public interface IQuery

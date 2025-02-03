@@ -34,4 +34,9 @@ public class InMemoryOrderRepository : IOrderRepository
             .Take(query.PageSize)
             .ToList();
     }
+
+    public Task<bool> IsExistingOrder(OrderId orderId, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_orders.ContainsKey(orderId));
+    }
 }

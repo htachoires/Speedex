@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Speedex.Api\Speedex.Api.csproj" />
+        <ProjectReference Include="..\Speedex.Tests.Tools\Speedex.Tests.Tools.csproj" />
     </ItemGroup>
 
     <ItemGroup>

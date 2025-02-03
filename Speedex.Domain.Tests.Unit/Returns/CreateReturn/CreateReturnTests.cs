@@ -18,7 +18,7 @@ public class CreateReturnTests
         // var handler = new CreateOrderCommandHandler(orderRepository);
         //
         // // Act
-        // var result = handler.Handle(command);
+        // var result = await handler.Handle(command);
         //
         // // Assert
         // Assert.True(result.Success);

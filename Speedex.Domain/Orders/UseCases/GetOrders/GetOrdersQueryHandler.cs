@@ -6,13 +6,10 @@ namespace Speedex.Domain.Orders.UseCases.GetOrders;
 public class GetOrdersQueryHandler(IOrderRepository orderRepository)
     : IQueryHandler<GetOrdersQuery, GetOrdersQueryResult>
 {
-    public GetOrdersQueryResult Query(GetOrdersQuery query)
+    public Task<GetOrdersQueryResult> Query(GetOrdersQuery query, CancellationToken cancellationToken = default)
     {
         var result = orderRepository.GetOrders(query.ToGetOrdersDto());
 
-        return new GetOrdersQueryResult
-        {
-            Items = result
-        };
+        return Task.FromResult(new GetOrdersQueryResult { Items = result });
     }
 }

@@ -4,6 +4,9 @@ namespace Speedex.Domain.Parcels.Repositories;
 
 public interface IParcelRepository
 {
-    public UpsertParcelResult UpsertParcel(Parcel parcel);
-    public IEnumerable<Parcel> GetParcels(GetParcelsDto query);
+    UpsertParcelResult UpsertParcel(Parcel parcel);
+
+    IEnumerable<Parcel> GetParcels(GetParcelsDto query);
+
+    Task<bool> IsExistingParcel(ParcelId parcelId, CancellationToken cancellationToken);
 }

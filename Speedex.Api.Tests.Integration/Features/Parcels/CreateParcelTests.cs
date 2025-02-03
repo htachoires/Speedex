@@ -1,7 +1,5 @@
-using System.Text;
 using System.Text.Json;
 using Speedex.Api.Features.Parcels.Requests;
-using Speedex.Api.Features.Parcels.Responses;
 
 namespace Speedex.Api.Tests.Integration.Features.Parcels;
 
