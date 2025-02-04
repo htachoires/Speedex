@@ -82,4 +82,35 @@ public class CreateParcelTests : IClassFixture<CustomWebApplicationFactory<Progr
         // return status must be bad request
         //Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task TODO_CreateParcel_Should_ReturnBadRequest_When_OrderIdIsNotFound()
+    {
+        // Arrange
+        var httpClient = _factory.CreateClient();
+
+        var request = new CreateParcelBodyRequest
+        {
+            OrderId = Guid.NewGuid().ToString(),
+            Products =
+            [
+                new CreateParcelBodyRequest.ParcelProductCreateParcelBodyRequest()
+                {
+                    ProductId = Guid.NewGuid().ToString(),
+                    Quantity = 1
+                }
+            ]
+        };
+
+        var bodyContent = JsonSerializer.Serialize(request);
+
+        // Act
+        //TODO(lvl-6) Implement call parcel creation endpoint
+        //var response = null;
+
+        // Assert
+        //TODO(lvl-6) Uncomment the following lines when the response is implemented
+        // return status must be bad request
+        //Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
