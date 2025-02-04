@@ -13,7 +13,7 @@ public class CreateProductTests : IClassFixture<CustomWebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateProduct_Should_ReturnCreatedStatusCode_And_FindCreatedProduct()
+    public async Task TODO_CreateProduct_Should_ReturnCreatedStatusCode_And_FindCreatedProduct()
     {
         //TODO(lvl-3) Implement the test using AAA pattern
         // You can use the Order, Parcel and Return tests as a reference

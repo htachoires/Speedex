@@ -38,4 +38,11 @@ public class InMemoryProductRepository : IProductRepository
     {
         return Task.FromResult(_products.ContainsKey(productId));
     }
+
+    public Task<Product?> GetProductById(ProductId productId, CancellationToken cancellationToken)
+    {
+        var product = _products.SingleOrDefault(x => x.Key == productId).Value;
+
+        return Task.FromResult<Product?>(product);
+    }
 }

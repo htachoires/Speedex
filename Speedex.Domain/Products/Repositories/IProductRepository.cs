@@ -9,4 +9,5 @@ public interface IProductRepository
     IEnumerable<Product> GetProducts(GetProductsDto query);
 
     Task<bool> IsExistingProduct(ProductId productId, CancellationToken cancellationToken);
+    Task<Product?> GetProductById(ProductId productId, CancellationToken cancellationToken);
 }
