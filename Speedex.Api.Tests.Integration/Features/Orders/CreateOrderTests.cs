@@ -1,7 +1,11 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Speedex.Api.Features.Orders.Requests;
 using Speedex.Api.Features.Orders.Responses;
+using Speedex.Api.Tests.Integration.Features.Orders.Requests;
+using Speedex.Domain.Orders;
+using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Api.Tests.Integration.Features.Orders;
 
@@ -16,18 +20,43 @@ public class CreateOrderTests : IClassFixture<CustomWebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task TODO_CreateOrder_Should_ReturnCreatedStatusCode_And_FindCreatedOrder()
+    public async Task CreateOrder_Should_ReturnCreatedStatusCode_And_FindCreatedOrder()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        //TODO(lvl-1) Setup a request object to create an order
-        var request = new { };
+        var product = AProduct.Build();
+
+        _factory.Services.GetRequiredService<IProductRepository>().UpsertProduct(product);
+
+        var request = new CreateOrderTestBodyRequest
+        {
+            DeliveryType = DeliveryType.Standard.ToString(),
+            Products = [
+            new CreateOrderTestBodyRequest.ProductTestBodyRequest
+            {
+                ProductId = product.ProductId.Value,
+                Quantity = 10
+            }
+            ],
+            Recipient = new CreateOrderTestBodyRequest.RecipientTestBodyRequest
+            {
+                FirstName = "fooFirstName",
+                LastName = "fooLastName",
+                Email = "fooEmail",
+                Phone = "fooPhone",
+                Address = "fooAddress",
+                AdditionalAddress = "fooAdditionalAddress",
+                City = "fooCity",
+                Country = "fooCountry"
+            }
+        };
 
         // Act
         var response = await httpClient.PostAsync("/Orders", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
         // Assert
+        var responseContent = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var location = response.Headers.Location.ToString();
@@ -41,13 +70,35 @@ public class CreateOrderTests : IClassFixture<CustomWebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task TODO_CreateOrder_Should_ReturnBadRequest_When_ProductIsNotFound()
+    public async Task CreateOrder_Should_ReturnBadRequest_When_ProductIsNotFound()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        //TODO(lvl-4) Setup a request object to create an order
-        var request = new { };
+        var productIdNotFound = "productIdNotFound";
+
+        var request = new CreateOrderBodyRequest
+        {
+            DeliveryType = DeliveryType.Standard.ToString(),
+            Products = [
+                new CreateOrderBodyRequest.ProductBodyRequest
+                {
+                    ProductId = productIdNotFound,
+                    Quantity = 10
+                }
+            ],
+            Recipient = new CreateOrderBodyRequest.RecipientBodyRequest
+            {
+                FirstName = "fooFirstName",
+                LastName = "fooLastName",
+                Email = "fooEmail",
+                Phone = "fooPhone",
+                Address = "fooAddress",
+                AdditionalAddress = "fooAdditionalAddress",
+                City = "fooCity",
+                Country = "fooCountry"
+            }
+        };
 
         // Act
         var response = await httpClient.PostAsync("/Orders", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));

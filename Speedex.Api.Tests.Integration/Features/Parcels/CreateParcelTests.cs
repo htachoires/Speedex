@@ -1,5 +1,9 @@
+using System.Net;
 using System.Text.Json;
 using Speedex.Api.Features.Parcels.Requests;
+using Speedex.Api.Features.Parcels.Responses;
+using Speedex.Domain.Orders.Repositories;
+using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Api.Tests.Integration.Features.Parcels;
 
@@ -14,46 +18,48 @@ public class CreateParcelTests : IClassFixture<CustomWebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task TODO_CreateParcel_Should_ReturnCreatedStatusCode_And_FindCreatedParcel()
+    public async Task CreateParcel_Should_ReturnCreatedStatusCode_And_FindCreatedParcel()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
 
+        var product = AProduct.Build();
+        var order = AnOrder.Build();
+
+        _factory.Services.GetRequiredService<IProductRepository>().UpsertProduct(product);
+        _factory.Services.GetRequiredService<IOrderRepository>().UpsertOrder(order);
+
         var request = new CreateParcelBodyRequest
         {
-            OrderId = Guid.NewGuid().ToString(),
+            OrderId = order.OrderId.Value,
             Products =
             [
                 new CreateParcelBodyRequest.ParcelProductCreateParcelBodyRequest()
                 {
-                    ProductId = Guid.NewGuid().ToString(),
+                    ProductId = product.ProductId.Value,
                     Quantity = 1
                 }
             ]
         };
 
-        var bodyContent = JsonSerializer.Serialize(request);
-
         // Act
-        //TODO(lvl-2) Implement call parcel creation endpoint
-        //var response = null;
-        //
+        var response = await httpClient.PostAsJsonAsync("/Parcels", request);
+
         // Assert
-        //TODO(lvl-2) Uncomment the following lines when the response is implemented
-        //Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        //
-        // var location = response.Headers.Location.ToString();
-        //
-        // var getResponse = await httpClient.GetAsync(location);
-        //
-        // var content = await getResponse.Content.ReadAsStringAsync();
-        // var getParcelsResponse = JsonSerializer.Deserialize<GetParcelsResponse>(content, _jsonSerializerOptions);
-        //
-        // Assert.Single(getParcelsResponse!.Items);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var location = response.Headers.Location.ToString();
+
+        var getResponse = await httpClient.GetAsync(location);
+
+        var content = await getResponse.Content.ReadAsStringAsync();
+        var getParcelsResponse = JsonSerializer.Deserialize<GetParcelsResponse>(content, _jsonSerializerOptions);
+
+        Assert.Single(getParcelsResponse!.Items);
     }
 
     [Fact]
-    public async Task TODO_CreateParcel_Should_ReturnBadRequest_When_ProductIdIsNotFound()
+    public async Task CreateParcel_Should_ReturnBadRequest_When_ProductIdIsNotFound()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
@@ -71,20 +77,16 @@ public class CreateParcelTests : IClassFixture<CustomWebApplicationFactory<Progr
             ]
         };
 
-        var bodyContent = JsonSerializer.Serialize(request);
-
         // Act
-        //TODO(lvl-5-1) Implement call parcel creation endpoint
-        //var response = null;
+        var response = await httpClient.PostAsJsonAsync("/Parcels", request);
 
         // Assert
-        //TODO(lvl-5-2) Uncomment the following lines when the response is implemented
-        // return status must be bad request
-        //Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("IsExistingProductValidator", await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
-    public async Task TODO_CreateParcel_Should_ReturnBadRequest_When_OrderIdIsNotFound()
+    public async Task CreateParcel_Should_ReturnBadRequest_When_OrderIdIsNotFound()
     {
         // Arrange
         var httpClient = _factory.CreateClient();
@@ -102,15 +104,11 @@ public class CreateParcelTests : IClassFixture<CustomWebApplicationFactory<Progr
             ]
         };
 
-        var bodyContent = JsonSerializer.Serialize(request);
-
         // Act
-        //TODO(lvl-6) Implement call parcel creation endpoint
-        //var response = null;
+        var response = await httpClient.PostAsJsonAsync("/Parcels", request);
 
         // Assert
-        //TODO(lvl-6) Uncomment the following lines when the response is implemented
-        // return status must be bad request
-        //Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("IsExistingOrderValidator", await response.Content.ReadAsStringAsync());
     }
 }
