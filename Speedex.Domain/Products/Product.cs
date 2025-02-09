@@ -49,6 +49,20 @@ public record Dimensions
     public double Y { get; init; }
     public double Z { get; init; }
     public DimensionUnit Unit { get; init; }
+
+    public double VolumeInCubicMeter
+    {
+        get
+        {
+            return Unit switch
+            {
+                DimensionUnit.Cm => X * Y * Z / 1_000_000,
+                DimensionUnit.Mm => X * Y * Z / 1_000_000_000,
+                DimensionUnit.M => X * Y * Z,
+                _ => throw new ArgumentOutOfRangeException(nameof(Unit), Unit, "Dimension unit is not supported")
+            };
+        }
+    }
 }
 
 public enum DimensionUnit
