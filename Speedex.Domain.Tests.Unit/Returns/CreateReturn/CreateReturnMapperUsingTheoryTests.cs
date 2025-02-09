@@ -26,36 +26,4 @@ public class CreateReturnMapperUsingTheoryTests
         //Assert
         Assert.Equal(expectedOrderId, createdReturn.OrderId.Value);
     }
-
-    // [Theory]
-    public void ToReturn_Should_Create_Return_With_Specific_ParcelId_When_Mapping_Create_Return_Command()
-    {
-        //Arrange
-        //TODO: Instantiate CreateReturnCommand, used for your test (in act part)
-
-        //Act
-        // var createdReturn = command.ToReturn();
-
-        //Assert
-        //TODO: add the appropriate assertion to check return status
-        //Assert.Equal ?
-        //Assert.Null ?
-        //Assert.NotNull ?
-    }
-
-    // [Theory]
-    public void ToReturn_Should_Create_Return_With_Specific_ProductId_When_Mapping_Create_Return_Command()
-    {
-        //Arrange
-        //TODO: Instantiate CreateReturnCommand, used for your test (in act part)
-
-        //Act
-        // var createdReturn = command.ToReturn();
-
-        //Assert
-        //TODO: add the appropriate assertion to check return status
-        //Assert.Equal ?
-        //Assert.Null ?
-        //Assert.NotNull ?
-    }
 }
