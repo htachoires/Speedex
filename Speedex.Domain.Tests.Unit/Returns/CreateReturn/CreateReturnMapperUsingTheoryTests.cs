@@ -3,7 +3,7 @@ using Speedex.Domain.Returns.UseCases.CreateReturn;
 
 namespace Speedex.Domain.Tests.Unit.Returns.CreateReturn;
 
-public class CreateReturnMapperWithTheoryTests
+public class CreateReturnMapperUsingTheoryTests
 {
     [Theory]
     [InlineData("fooOrderId", "fooOrderId")]
