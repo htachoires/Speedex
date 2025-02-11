@@ -13,6 +13,7 @@ public static class GetOrdersQueryMapper
         {
             OrderId = query.OrderId,
             ProductId = query.ProductId,
+            CustomerEmail = query.CustomerEmail,
             PageIndex = query.PageIndex ?? defaultPageIndex,
             PageSize = query.PageSize ?? defaultPageSize,
         };

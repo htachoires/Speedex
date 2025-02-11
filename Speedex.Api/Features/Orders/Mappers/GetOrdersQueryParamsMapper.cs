@@ -14,6 +14,7 @@ public static class GetOrdersQueryParamsMapper
             OrderId = queryParams.OrderId is not null ? new OrderId(queryParams.OrderId) : null,
             ProductId = queryParams.ProductId is not null ? new ProductId(queryParams.ProductId) : null,
             PageIndex = queryParams.PageIndex,
+            CustomerEmail = queryParams.CustomerEmail,
             PageSize = queryParams.PageSize,
         };
     }

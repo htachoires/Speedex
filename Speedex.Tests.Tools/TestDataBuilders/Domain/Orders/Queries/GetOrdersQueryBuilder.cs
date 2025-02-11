@@ -8,6 +8,7 @@ public class GetOrdersQueryBuilder
 {
     private OrderId _orderId = new("fooOrderId");
     private ProductId _productId = new("fooProductId");
+    private string _customerEmail = "";
     private int? _pageIndex = 1;
     private int? _pageSize = 100;
 
@@ -23,6 +24,7 @@ public class GetOrdersQueryBuilder
         {
             OrderId = _orderId,
             ProductId = _productId,
+            CustomerEmail = _customerEmail,
             PageIndex = _pageIndex,
             PageSize = _pageSize,
         };
@@ -51,6 +53,13 @@ public class GetOrdersQueryBuilder
         _pageSize = pageSize;
         return this;
     }
+    
+    public GetOrdersQueryBuilder WithCustomerEmail(string? customerEmail)
+    {
+        _customerEmail = customerEmail;
+        return this;
+    }
+
 
     public GetOrdersQueryBuilder WithoutPageSize()
     {

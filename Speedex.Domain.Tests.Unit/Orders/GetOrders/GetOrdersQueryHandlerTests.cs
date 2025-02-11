@@ -50,6 +50,24 @@ public class GetOrdersQueryHandlerTests
         // Assert
         orderRepository.Received(1).GetOrders(Arg.Is<GetOrdersDto>(dto => dto.PageIndex == 2));
     }
+    
+    [Fact]
+    public void Query_Should_Pass_Correct_CustomerEmail_To_Repository()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var handler = new GetOrdersQueryHandler(orderRepository);
+
+        var query = AGetOrdersQuery.WithCustomerEmail("client1@example.com").Build();
+
+        // Act
+        handler.Query(query);
+
+        // Assert
+        orderRepository.Received(1).GetOrders(Arg.Is<GetOrdersDto>(dto => dto.CustomerEmail == "client1@example.com"));
+    }
+
 
     [Fact]
     public void Query_Should_Pass_Correct_PageSize_To_Repository()
