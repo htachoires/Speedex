@@ -31,6 +31,13 @@ public class CreateOrderCommandBuilder
 
     public CreateOrderCommandBuilder WithProduct(CreateOrderCommandProductBuilder product)
     {
+        _products.Clear();
+        _products.Add(product);
+        return this;
+    }
+
+    public CreateOrderCommandBuilder AddProduct(CreateOrderCommandProductBuilder product)
+    {
         _products.Add(product);
         return this;
     }
