@@ -27,7 +27,20 @@ public class InMemoryProductRepository : IProductRepository
         {
             return _products.TryGetValue(query.ProductId, out var product) ? new List<Product> { product } : new List<Product>();
         }
+        var filteredProducts = _products.Values.AsQueryable();
+        // If Category is provided, filter by Category
+        
+        if (!string.IsNullOrEmpty(query.Category))
+        {
+            filteredProducts = filteredProducts.Where(p => p.Category == query.Category);
+            filteredProducts = filteredProducts
+                .Skip((query.PageIndex - 1) * query.PageSize)  // Skip based on the current page
+                .Take(query.PageSize);  // Take only the number of items for the current page
 
+            // Return the filtered and paginated list of products
+            return filteredProducts.ToList();
+        }
+        
         return _products.Values
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
