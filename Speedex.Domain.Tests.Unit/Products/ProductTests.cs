@@ -31,4 +31,17 @@ public class ProductTests
         //Assert
         Assert.Equal(expectedVolume, volume);
     }
+
+    [Fact]
+    public void Should_Return_Quantity_NotRespectedResult_When_Product_Quantity_InParcel_IsGreaterThan_QuantityOrdered()
+    {
+        //Arrange
+        //TODO: (US-07)
+
+        //Act
+
+
+        //Assert
+
+    }
 }
