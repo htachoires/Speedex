@@ -24,14 +24,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var command = ACreateOrderCommand.Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -46,9 +47,8 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-        var productRepository = Substitute.For<IProductRepository>();
-
-
+        var productRepository = Substitute.F<or<IProductRepository>();
+        
         var product = new Product()
         {
             ProductId = new ProductId("productId"),
@@ -69,7 +69,7 @@ public class CreateOrderCommandHandlerTests
                 .WithQuantity(1))
             .Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -87,7 +87,8 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         Order? order = null;
         orderRepository
             .UpsertOrder(Arg.Do<Order>(or => { order = or; }))
@@ -97,7 +98,7 @@ public class CreateOrderCommandHandlerTests
             .WithRecipient(ACreateOrderRecipient.WithLastName(lastName))
             .Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -112,14 +113,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Failed });
 
         var command = ACreateOrderCommand.Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -134,13 +136,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var command = ACreateOrderCommand.Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -154,7 +157,8 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
@@ -162,7 +166,7 @@ public class CreateOrderCommandHandlerTests
         var productId = new ProductId("product-1");
         var product = ACreateOrderCommandProduct.WithProductId(productId);
         var command = ACreateOrderCommand.WithProduct(product).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -176,14 +180,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var product = ACreateOrderCommandProduct.WithQuantity(2);
         var command = ACreateOrderCommand.WithProduct(product).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -197,13 +202,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var command = ACreateOrderCommand.WithDeliveryType(DeliveryType.Express).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -217,14 +223,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithFirstName("John");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -238,14 +245,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithEmail("john.doe@example.com");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -259,6 +267,7 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -266,7 +275,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithPhone("1234567890");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -280,14 +289,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithAddress("123 Main St");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -301,14 +311,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithAdditionalAddress("Apt 4");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -322,14 +333,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithCity("New York");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -343,14 +355,15 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-
+        var productRepository = Substitute.For<IProductRepository>();
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithCountry("USA");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
