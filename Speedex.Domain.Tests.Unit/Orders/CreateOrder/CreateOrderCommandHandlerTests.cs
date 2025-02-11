@@ -356,4 +356,57 @@ public class CreateOrderCommandHandlerTests
         // Assert
         orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Recipient.Country == "USA"));
     }
+    
+    [Fact]
+    public async Task Create_Product_Should_Return_Failure_Result_When_The_Weight_Is_Upper_Than_30_Kg(){
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 15
+            }
+        };
+        
+        var product2 = new Product()
+        {
+            ProductId = new ProductId("productId2"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 16
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+        
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product2.ProductId), CancellationToken.None)
+            .Returns(product2);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product2.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command weight is more than 30kg", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
+
+    }
+
 }

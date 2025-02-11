@@ -53,11 +53,11 @@ envoyez-le par email :
 
 ---
 
-## US-01 - Le nom du destinataire de la commande doit être en majuscule ✉️
+## ~~US-01 - Le nom du destinataire de la commande doit être en majuscule ✉️~~
 
 En tant que **responsable logistique**, je veux que le nom du destinataire d’une
 commande soit toujours formaté en majuscule afin de garantir la cohérence et la
-lisibilité des informations sur les étiquettes de livraison.
+lisibilité des informations sur les étiquettes de livraison. 
 
 ## US-02 - Ajouter un filtre pour les produits en fonction de la catégorie 🛍️
 
