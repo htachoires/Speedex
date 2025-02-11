@@ -38,13 +38,14 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         }
 
         decimal totalWeight = 0;
+        decimal totalPrice = 0;
         foreach (var product in command.Products)
         {
             var productData = await _productRepository.GetProductById(product.ProductId, cancellationToken);
             if (productData != null)
             {
-                totalWeight += (decimal)productData.Weight.Value * product.Quantity;
-                
+                 totalWeight += (decimal)productData.Weight.Value * product.Quantity; 
+                 totalPrice += productData.Price.ToEUR().Amount * product.Quantity;
             }
         }
 
@@ -60,7 +61,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                         Message = "Command weight is more than 30kg",
                         Code = "Command_WeightExceeded_Error"
                     }
-                }
+                },
+                totalPrice = totalPrice,
             };
         }
         
@@ -96,7 +98,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         {
             return new CreateOrderResult
             {
-                Success = false
+                Success = false,
+                totalPrice = totalPrice,
             };
         }
 
@@ -104,6 +107,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         {
             OrderId = createdOrder.OrderId,
             Success = true,
+            totalPrice = totalPrice,
         };
     }
 

@@ -36,7 +36,7 @@ public class CreateOrderCommandHandlerTests
         var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command);
 
         // Assert
         Assert.True(result.Success);
@@ -81,6 +81,45 @@ public class CreateOrderCommandHandlerTests
     }
     
     
+    [Fact]
+    public async Task Handle_Should_Return_Correct_Sum_When_Order_Has_Multiple_Products()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 15.5
+            },
+            Price = new Price()
+            {
+                Amount = 10,
+                Currency = Currency.EUR,
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(2))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.Equal(20, result.totalPrice);
+    }
     
     [Fact]
     public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()

@@ -10,7 +10,7 @@ public record Product
     public string Category { get; init; }
     public string SecondLevelCategory { get; init; }
     public string ThirdLevelCategory { get; init; }
-    public Price Price { get; init; }
+    public Price Price { get; init; } = new Price { Amount = 0, Currency = Currency.EUR };
     public Dimensions Dimensions { get; init; } = new Dimensions { X = 0, Y = 0, Z = 0, Unit = DimensionUnit.M };
     
     public Weight Weight { get; init; } = new Weight { Value = 0, Unit = WeightUnit.Kg };
