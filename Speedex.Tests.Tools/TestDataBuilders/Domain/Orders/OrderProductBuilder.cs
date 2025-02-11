@@ -18,4 +18,9 @@ public class OrderProductBuilder
             Quantity = _quantity
         };
     }
+    public OrderProductBuilder WithProductId(string productId)
+    {
+        _productId = new ProductId(productId); // Update ProductId
+        return this; // Return this instance for method chaining
+    }
 }

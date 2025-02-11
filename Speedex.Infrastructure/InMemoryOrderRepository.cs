@@ -52,4 +52,15 @@ public class InMemoryOrderRepository : IOrderRepository
 
         return Task.FromResult<Order>(null);
     }
+    
+    public Task<Order?> GetOrderById(string orderId, CancellationToken cancellationToken = default)
+    {
+        var orderIdObj = new OrderId(orderId);
+        if (_orders.TryGetValue(orderIdObj, out var order))
+        {
+            return Task.FromResult<Order?>(order);
+        }
+
+        return Task.FromResult<Order?>(null);
+    }
 }

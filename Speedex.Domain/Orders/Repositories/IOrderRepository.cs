@@ -11,4 +11,7 @@ public interface IOrderRepository
     Task<bool> IsExistingOrder(OrderId orderId, CancellationToken cancellationToken = default);
     
     Task<Order> GetOrderById(OrderId orderId, CancellationToken cancellationToken = default);
+    
+    Task<Order?> GetOrderById(string orderId, CancellationToken cancellationToken = default);
+            
 }
