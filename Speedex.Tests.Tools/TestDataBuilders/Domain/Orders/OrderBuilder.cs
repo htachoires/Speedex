@@ -6,9 +6,9 @@ public class OrderBuilder
 {
     private OrderId _orderId = new("fooOrderId");
 
-    private IEnumerable<OrderProductBuilder> _products = new List<OrderProductBuilder>
+    private List<OrderProduct> _products = new List<OrderProduct>
     {
-        OrderProductBuilder.AnOrderProduct
+        OrderProductBuilder.AnOrderProduct.Build()
     };
 
     private DeliveryType _deliveryType = DeliveryType.Standard;
@@ -27,7 +27,7 @@ public class OrderBuilder
         return new Order
         {
             OrderId = _orderId,
-            Products = _products.Select(x => x.Build()),
+            Products = _products,
             DeliveryType = _deliveryType,
             Recipient = _recipient.Build(),
             CreationDate = _creationDate,
@@ -38,6 +38,12 @@ public class OrderBuilder
     public OrderBuilder Id(OrderId id)
     {
         _orderId = id;
+        return this;
+    }
+    
+    public OrderBuilder WithProduct(OrderProduct productBuilder)
+    {
+        _products.Add(productBuilder);
         return this;
     }
 }

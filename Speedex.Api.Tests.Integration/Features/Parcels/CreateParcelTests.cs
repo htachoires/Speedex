@@ -6,6 +6,7 @@ using Speedex.Api.Features.Parcels.Responses;
 using Speedex.Api.Tests.Integration.Features.Parcels.Request;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Products.Repositories;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 
 namespace Speedex.Api.Tests.Integration.Features.Parcels;
 
@@ -124,5 +125,50 @@ public class CreateParcelTests : IClassFixture<CustomWebApplicationFactory<Progr
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Contains("IsExistingOrderValidator", await response.Content.ReadAsStringAsync());
+    }
+    
+    [Fact]
+    public async Task Should_ReturnTrue_When_ProductIsInsideOrder()
+    {
+        // Arrange : we make an order which contains an orderproduct
+        var httpClient = _factory.CreateClient();
+
+        var orderProduct = OrderProductBuilder.AnOrderProduct.WithProductId("notFoo").Build();
+        var order = AnOrder
+            .WithProduct(orderProduct) // Add custom product.
+            .Build();
+        
+        _factory.Services.GetRequiredService<IOrderRepository>().UpsertOrder(order);
+        //_factory.Services.GetRequiredService<IProductRepository>().UpsertProduct(orderProduct);
+        
+        // Act
+        var retrievedOrder = await _factory.Services.GetRequiredService<IOrderRepository>()
+            .GetOrderById(order.OrderId.Value);
+
+        // Assert
+        Assert.Contains(retrievedOrder!.Products, p => p.ProductId.Value == orderProduct.ProductId.Value);
+        
+    }
+    
+    [Fact]
+    public async Task Should_ReturnFalse_When_ProductIsNotInsideOrder()
+    {
+        // Arrange : we make an order which contains an orderproduct
+        var httpClient = _factory.CreateClient();
+
+        var orderProduct = OrderProductBuilder.AnOrderProduct.WithProductId("notFoo").Build();
+        var order = AnOrder // Add custom product.
+            .Build();
+        
+        _factory.Services.GetRequiredService<IOrderRepository>().UpsertOrder(order);
+        //_factory.Services.GetRequiredService<IProductRepository>().UpsertProduct(orderProduct);
+        
+        // Act
+        var retrievedOrder = await _factory.Services.GetRequiredService<IOrderRepository>()
+            .GetOrderById(order.OrderId.Value);
+
+        // Assert
+        Assert.DoesNotContain(retrievedOrder!.Products, p => p.ProductId.Value == orderProduct.ProductId.Value);
+        
     }
 }

@@ -39,4 +39,16 @@ public class InMemoryOrderRepository : IOrderRepository
     {
         return Task.FromResult(_orders.ContainsKey(orderId));
     }
+
+    public Task<Order?> GetOrderById(string orderId, CancellationToken cancellationToken = default)
+    {
+        // Use OrderId type for matching, not string (for type safety)
+        var orderIdObj = new OrderId(orderId);
+
+        // Using the dictionary to find the order by the key (OrderId)
+        var order = _orders.TryGetValue(orderIdObj, out var foundOrder) ? foundOrder : null;
+
+        // Return result wrapped in Task
+        return Task.FromResult(order);
+    }
 }
