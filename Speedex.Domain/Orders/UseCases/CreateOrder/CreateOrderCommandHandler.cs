@@ -14,7 +14,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
     private readonly IProductRepository _productRepository;
 
     public CreateOrderCommandHandler(IOrderRepository orderRepository, IValidator<CreateOrderCommand> commandValidator)
-        : this(orderRepository, commandValidator, null) 
+        : this(orderRepository, commandValidator, null)
     {
     }
 
@@ -25,11 +25,11 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
     {
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
         _commandValidator = commandValidator ?? throw new ArgumentNullException(nameof(commandValidator));
-        _productRepository = productRepository; // Peut être `null`
+        _productRepository = productRepository;
     }
 
-
-    public async Task<CreateOrderResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken = default)
+    public async Task<CreateOrderResult> Handle(CreateOrderCommand command,
+        CancellationToken cancellationToken = default)
     {
         var validationResult = await _commandValidator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -46,7 +46,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                     }).ToList()
             };
         }
-        
+
         decimal total = 0;
         decimal weightInKg = 0;
         if (_productRepository != null)
@@ -79,7 +79,10 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
 
             command.Price = total;
             command.Weight = weightInKg;
-            
+
+            // Debugging information
+            Console.WriteLine($"Total weight in kg: {weightInKg}");
+
             if (command.Weight > 30)
             {
                 return new CreateOrderResult
@@ -98,22 +101,30 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             }
         }
 
-        var createdOrder = command.ToOrder();
-        
-        var result = _orderRepository.UpsertOrder(createdOrder);
+        var order = command.ToOrder();
+        var upsertResult =  _orderRepository.UpsertOrder(order); // Await the async method
 
-        if (result.Status != UpsertOrderResult.UpsertStatus.Success)
+        if (upsertResult == null || upsertResult.Status == UpsertOrderResult.UpsertStatus.Failed)
         {
             return new CreateOrderResult
             {
-                Success = false
+                Success = false,
+                Errors = new List<CreateOrderResult.ValidationError>
+                {
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Error while saving order",
+                        PropertyName = "Order",
+                        Code = "Order_Save_Error"
+                    }
+                }
             };
         }
 
         return new CreateOrderResult
         {
-            OrderId = createdOrder.OrderId,
             Success = true,
+            OrderId = order.OrderId
         };
     }
 }

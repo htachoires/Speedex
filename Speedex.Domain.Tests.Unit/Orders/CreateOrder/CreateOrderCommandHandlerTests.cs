@@ -307,7 +307,11 @@ public class CreateOrderCommandHandlerTests
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
-            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+            .Returns(new UpsertOrderResult
+            {
+                Status = UpsertOrderResult.UpsertStatus.Success
+            });
+
 
         var recipient = ACreateOrderRecipient.WithCountry("USA");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
@@ -355,5 +359,47 @@ public class CreateOrderCommandHandlerTests
         Assert.False(result.Success);
         Assert.Equal("Command weight is more than 30kg", result.Errors.FirstOrDefault().Message);
         Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_Success_Result_When_Order_Weight_Less_Than_30()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Gr,
+                Value = 31
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        orderRepository
+            .UpsertOrder(Arg.Any<Order>())
+            .Returns(new UpsertOrderResult
+            {
+                Status = UpsertOrderResult.UpsertStatus.Success
+            });
+        
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.True(result.Success);
     }
 }
