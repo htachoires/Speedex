@@ -12,6 +12,13 @@ public class GetOrdersResponse
         public Recipient Recipient { get; init; }
         public string CreationDate { get; init; }
         public string UpdateDate { get; init; }
+        public Price TotalAmount { get; init; }
+
+        public record Price
+        {
+            public decimal Amount { get; init; }
+            public string Currency { get; init; }
+        }
     }
 
     public record Recipient

@@ -31,6 +31,11 @@ public static class GetOrdersResponseMapper
                 },
                 CreationDate = x.CreationDate.ToString("u"),
                 UpdateDate = x.UpdateDate.ToString("u"),
+                TotalAmount = new GetOrdersResponse.GetOrderItemResponse.Price
+                {
+                    Amount = x.TotalAmount.Amount,
+                    Currency = x.TotalAmount.Currency.ToString()
+                }
             })
         };
     }

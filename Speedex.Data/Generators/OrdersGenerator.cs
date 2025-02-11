@@ -74,22 +74,41 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
 
         var address = $"{buildingNumber} {streetType} {streetParts}";
 
-        var productIds = Enumerable
+        var products = Enumerable
             .Range(0, nbProducts * 2)
             .Select(x => _random.Next(0, productGenerator.Data.Count))
             .Distinct()
             .Take(nbProducts)
-            .Select(x => productGenerator.Data.ElementAt(x).Key);
+            .Select(x => productGenerator.Data.ElementAt(x).Value)
+            .ToList();
+
+        var orderProducts = products.Select(
+            x => new OrderProduct
+            {
+                ProductId = x.ProductId,
+                Quantity = _random.Next(1, 5),
+            }).ToList();
+
+        var totalAmount = new Price
+        {
+            Amount = 0,
+            Currency = Currency.EUR
+        };
+
+        foreach (var commandProduct in orderProducts)
+        {
+            var product = products.Single(x => x.ProductId == commandProduct.ProductId);
+            totalAmount = new Price
+            {
+                Amount = totalAmount.Amount + (product.Price.ToEUR().Amount * commandProduct.Quantity),
+                Currency = Currency.EUR
+            };
+        }
 
         return new Order
         {
             OrderId = new OrderId($"OR_{index}_{GenerateHexadecimal(10)}"),
-            Products = productIds.Select(
-                x => new OrderProduct
-                {
-                    ProductId = x,
-                    Quantity = _random.Next(1, 5),
-                }).ToList(),
+            Products = orderProducts,
             DeliveryType = (DeliveryType)_random.Next(0, 2),
             Recipient = new Recipient
             {
@@ -103,7 +122,8 @@ public class OrdersGenerator(IDataGenerator<ProductId, Product> productGenerator
                 Country = location.Item1,
             },
             CreationDate = DateTime.Today,
-            UpdateDate = DateTime.Today
+            UpdateDate = DateTime.Today,
+            TotalAmount = totalAmount
         };
     }
 

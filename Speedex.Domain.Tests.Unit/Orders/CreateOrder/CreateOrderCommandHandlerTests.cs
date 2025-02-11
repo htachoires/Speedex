@@ -48,6 +48,50 @@ public class CreateOrderCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_Should_Compute_TotalOrderAmountInEUR()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+        var productCosting10Euro = ProductBuilder.AProduct.WithPrice(10, Currency.EUR).Build();
+        var productCosting5Euro = ProductBuilder.AProduct.WithPrice(5, Currency.EUR).Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == productCosting10Euro.ProductId), Arg.Any<CancellationToken>())
+            .Returns(productCosting10Euro);
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == productCosting5Euro.ProductId), Arg.Any<CancellationToken>())
+            .Returns(productCosting5Euro);
+
+        Order? order = null;
+        orderRepository
+            .UpsertOrder(Arg.Do<Order>(x => order = x))
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+
+        var command = ACreateOrderCommand
+            .WithProducts(
+                ACreateOrderCommandProduct
+                    .WithProductId(productCosting10Euro.ProductId)
+                    .WithQuantity(2),
+                ACreateOrderCommandProduct
+                    .WithProductId(productCosting5Euro.ProductId)
+                    .WithQuantity(4))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.NotNull(order);
+        Assert.Equal(40, order.TotalAmount.Amount);
+    }
+
+    [Fact]
     public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30_Kilograms()
     {
         // Arrange
@@ -103,6 +147,11 @@ public class CreateOrderCommandHandlerTests
             {
                 Unit = WeightUnit.Gr,
                 Value = 31
+            },
+            Price = new Price
+            {
+                Amount = 10,
+                Currency = Currency.EUR
             }
         };
 

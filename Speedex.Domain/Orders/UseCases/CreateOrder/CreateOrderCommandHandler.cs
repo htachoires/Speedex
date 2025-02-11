@@ -2,6 +2,7 @@ using FluentValidation;
 using Speedex.Domain.Commons;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
+using Speedex.Domain.Products;
 using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Domain.Orders.UseCases.CreateOrder;
@@ -67,6 +68,28 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         }
 
         var createdOrder = command.ToOrder();
+
+        var totalAmount = new Price
+        {
+            Amount = 0,
+            Currency = Currency.EUR
+        };
+
+        foreach (var commandProduct in command.Products)
+        {
+            var product = await _productRepository
+                .GetProductById(commandProduct.ProductId, CancellationToken.None);
+            totalAmount = new Price
+            {
+                Amount = totalAmount.Amount + (product.Price.ToEUR().Amount * commandProduct.Quantity),
+                Currency = Currency.EUR
+            };
+        }
+
+        createdOrder = createdOrder with
+        {
+            TotalAmount = totalAmount
+        };
 
         var result = _orderRepository.UpsertOrder(createdOrder);
 
