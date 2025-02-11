@@ -3,6 +3,7 @@ using Speedex.Domain.Commons;
 using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Orders.UseCases.GetOrders;
+using Speedex.Domain.Orders.UseCases.Top3Clients;
 using Speedex.Domain.Orders.Validators;
 using Speedex.Domain.Parcels;
 using Speedex.Domain.Parcels.UseCases.CreateParcel;
@@ -58,6 +59,7 @@ public static class DomainBootstrap
         services
             .AddScoped<IQueryHandler<GetOrdersQuery, GetOrdersQueryResult>, GetOrdersQueryHandler>()
             .AddScoped<IQueryHandler<GetParcelsQuery, GetParcelsQueryResult>, GetParcelsQueryHandler>()
+            .AddScoped<IQueryHandler<GetTop3ClientsQuery, GetTop3ClientsResult>, GetTop3ClientsQueryHandler>()
             .AddScoped<IQueryHandler<GetReturnsQuery, GetReturnsQueryResult>, GetReturnsQueryHandler>()
             .AddScoped<IQueryHandler<GetProductsQuery, GetProductsQueryResult>, GetProductsQueryHandler>();
 
