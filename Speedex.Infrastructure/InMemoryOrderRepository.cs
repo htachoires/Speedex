@@ -39,4 +39,10 @@ public class InMemoryOrderRepository : IOrderRepository
     {
         return Task.FromResult(_orders.ContainsKey(orderId));
     }
+    
+    public Task<Order?> GetOrderById(OrderId orderId, CancellationToken cancellationToken = default)
+    {
+        _orders.TryGetValue(orderId, out var order);
+        return Task.FromResult(order);
+    }
 }

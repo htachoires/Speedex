@@ -327,7 +327,7 @@ public class CreateOrderCommandHandlerTests
         var orderRepository = Substitute.For<IOrderRepository>();
 
         var largeProduct = ACreateOrderCommandProduct
-            .WithDimensions(1.1m, 1.0m, 1.0m) // Produit de volume 1.1m³
+            .WithDimensions(1.0m, 1.0m, 1.0m) // Produit de volume 1.1m³
             .WithQuantity(1);
 
         var command = ACreateOrderCommand.WithProduct(largeProduct).Build();
