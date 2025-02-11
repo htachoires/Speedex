@@ -19,6 +19,24 @@ public record Price
 {
     public decimal Amount { get; init; }
     public Currency Currency { get; init; }
+
+    public Price ToEUR()
+    {
+        return Currency switch
+        {
+            Currency.EUR => this,
+            Currency.RUB => new Price
+            {
+                Amount = Amount * 0.01m,
+                Currency = Currency.EUR
+            },
+            Currency.USD => new Price
+            {
+                Amount = Amount * 0.98m,
+                Currency = Currency.EUR
+            }
+        };
+    }
 }
 
 public enum Currency
