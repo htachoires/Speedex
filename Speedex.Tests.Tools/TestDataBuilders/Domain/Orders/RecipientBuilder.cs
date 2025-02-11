@@ -29,4 +29,10 @@ public class RecipientBuilder
             Country = _country
         };
     }
+
+    public RecipientBuilder WithEmail(string email)
+    {
+        _email = email;
+        return this;
+    }
 }

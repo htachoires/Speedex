@@ -10,6 +10,7 @@ public class GetOrdersQueryBuilder
     private ProductId _productId = new("fooProductId");
     private int? _pageIndex = 1;
     private int? _pageSize = 100;
+    private string? _email = new("fooEmail");
 
     public static GetOrdersQueryBuilder AGetOrdersQuery => new();
 
@@ -26,6 +27,12 @@ public class GetOrdersQueryBuilder
             PageIndex = _pageIndex,
             PageSize = _pageSize,
         };
+    }
+
+    public GetOrdersQueryBuilder WithEmail(string email)
+    {
+        this._email = email;
+        return this;
     }
 
     public GetOrdersQueryBuilder WithOrderId(OrderId orderId)

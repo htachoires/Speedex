@@ -1,8 +1,11 @@
 using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
+using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Orders.UseCases.GetOrders;
 using Speedex.Domain.Products;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.Commands;
 
 namespace Speedex.Domain.Tests.Unit.Orders.GetOrders;
 
@@ -33,6 +36,36 @@ public class GetOrdersQueryHandlerTests
         // Assert
         Assert.Equal(orders.Count, result.Items.Count());
     }
+    
+    [Fact]
+    public async Task Query_Should_Return_All_Orders_With_Specific_Email()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var orders = Enumerable
+            .Range(1, 3)
+            .Select(_ => AnOrder.Build())
+            .ToList();
+    
+        var orderWithEmail = AnOrder.WithRecipient(ARecipient.WithEmail("bbb")).Build();
+        orders.Add(orderWithEmail);
+        
+        orderRepository
+            .GetOrders(Arg.Is<GetOrdersDto>(dto => dto.Email == "bbb"))
+            .Returns(orders.Where(o => o.Recipient.Email == "bbb").ToList());
+
+        var query = AGetOrdersQuery.WithEmail("bbb").Build();
+        var handler = new GetOrdersQueryHandler(orderRepository);
+
+        // Act
+        var result = await handler.Query(query);
+
+        // Assert
+        Assert.Single(result.Items); 
+        Assert.Equal("bbb", result.Items.First().Recipient.Email); 
+    }
+
 
     [Fact]
     public void Query_Should_Pass_Correct_PageNumber_To_Repository()

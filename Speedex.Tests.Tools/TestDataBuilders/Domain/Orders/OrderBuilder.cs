@@ -1,4 +1,5 @@
 using Speedex.Domain.Orders;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.Commands;
 
 namespace Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 
@@ -34,7 +35,12 @@ public class OrderBuilder
             UpdateDate = _updateDate,
         };
     }
-
+    
+    public OrderBuilder WithRecipient(RecipientBuilder recipient)
+    {
+        _recipient = recipient;
+        return this;
+    }
     public OrderBuilder Id(OrderId id)
     {
         _orderId = id;
