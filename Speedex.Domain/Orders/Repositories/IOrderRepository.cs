@@ -9,4 +9,6 @@ public interface IOrderRepository
     IEnumerable<Order> GetOrders(GetOrdersDto query);
 
     Task<bool> IsExistingOrder(OrderId orderId, CancellationToken cancellationToken = default);
+    
+    Task<Order> GetOrderById(OrderId orderId, CancellationToken cancellationToken = default);
 }

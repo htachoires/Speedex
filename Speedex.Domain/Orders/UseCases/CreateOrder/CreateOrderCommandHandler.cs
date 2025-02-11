@@ -127,7 +127,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         }
 
         var order = command.ToOrder();
-        var upsertResult =  _orderRepository.UpsertOrder(order); // Await the async method
+        var upsertResult =  _orderRepository.UpsertOrder(order);
 
         if (upsertResult == null || upsertResult.Status == UpsertOrderResult.UpsertStatus.Failed)
         {
