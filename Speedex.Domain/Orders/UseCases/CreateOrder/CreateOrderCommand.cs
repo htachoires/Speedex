@@ -13,6 +13,9 @@ public record CreateOrderCommand : ICommand
     {
         public ProductId ProductId { get; init; }
         public int Quantity { get; init; }
+        public decimal Length { get; init; }
+        public decimal Width { get; init; }
+        public decimal Height { get; init; }
     }
 
     public record CreateOrderRecipient

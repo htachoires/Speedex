@@ -318,4 +318,26 @@ public class CreateOrderCommandHandlerTests
         // Assert
         orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Recipient.Country == "USA"));
     }
+    
+    //rvelia
+    [Fact]
+    public async Task Handle_Should_Return_Failure_If_Total_Volume_Exceeds_Limit()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var largeProduct = ACreateOrderCommandProduct
+            .WithDimensions(1.1m, 1.0m, 1.0m) // Produit de volume 1.1m³
+            .WithQuantity(1);
+
+        var command = ACreateOrderCommand.WithProduct(largeProduct).Build();
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Contains("Total volume exceeds limit", result.Errors.Select(e => e.Message));
+    }
 }

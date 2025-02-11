@@ -7,6 +7,9 @@ public class CreateOrderCommandProductBuilder
 {
     private ProductId _productId = new("defaultProductId");
     private int _quantity = 1;
+    private decimal _length = 1.0m;
+    private decimal _width = 1.0m;
+    private decimal _height = 1.0m;
 
     public static CreateOrderCommandProductBuilder ACreateOrderCommandProduct => new();
 
@@ -19,7 +22,10 @@ public class CreateOrderCommandProductBuilder
         return new CreateOrderCommand.Product
         {
             ProductId = _productId,
-            Quantity = _quantity
+            Quantity = _quantity,
+            Length = _length,
+            Width = _width,
+            Height = _height
         };
     }
 
@@ -32,6 +38,14 @@ public class CreateOrderCommandProductBuilder
     public CreateOrderCommandProductBuilder WithQuantity(int quantity)
     {
         _quantity = quantity;
+        return this;
+    }
+    
+    public CreateOrderCommandProductBuilder WithDimensions(decimal length, decimal width, decimal height)
+    {
+        _length = length;
+        _width = width;
+        _height = height;
         return this;
     }
 }
