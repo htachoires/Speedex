@@ -50,6 +50,24 @@ public record Weight
 {
     public double Value { get; init; }
     public WeightUnit Unit { get; init; }
+
+    public Weight ToKilograms()
+    {
+        return Unit switch
+        {
+            WeightUnit.Kg => this,
+            WeightUnit.Gr => new Weight
+            {
+                Value = Value / 1_000,
+                Unit = WeightUnit.Kg
+            },
+            WeightUnit.Mg => new Weight
+            {
+                Value = Value / 1_000_000,
+                Unit = WeightUnit.Kg
+            },
+        };
+    }
 }
 
 public enum WeightUnit
