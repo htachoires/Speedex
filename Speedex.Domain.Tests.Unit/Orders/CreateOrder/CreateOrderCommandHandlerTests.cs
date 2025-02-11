@@ -42,6 +42,43 @@ public class CreateOrderCommandHandlerTests
         Assert.True(result.Success);
         Assert.NotNull(result.OrderId);
     }
+    [Fact]
+    public async Task Handle_Should_Return_VolumeExceeded_Result_When_Order_Volume_More_Than_1()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Dimensions = new Dimensions()
+            {
+                X = 1,
+                Y = 1,
+                Z = 1,
+                Unit = DimensionUnit.M
+            }
+        };
+        
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+        
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(2))
+            .Build();
+        
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+        
+        var result = await handler.Handle(command);
+        
+        Assert.False(result.Success);
+        Assert.Equal("Command volume is more than 1 cubic meter", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_VolumeExceeded_Error", result.Errors.FirstOrDefault().Code);
+        
+        
+    }
     
     
     [Fact]
@@ -55,10 +92,15 @@ public class CreateOrderCommandHandlerTests
         var product = new Product()
         {
             ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 15.5
+            },
             Price = new Price()
             {
                 Amount = 10,
-                Currency = Currency.EUR
+                Currency = Currency.EUR,
             }
         };
 
@@ -67,7 +109,7 @@ public class CreateOrderCommandHandlerTests
             .Returns(product);
 
         var command = ACreateOrderCommand
-            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(2))
             .Build();
 
         var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
@@ -76,10 +118,9 @@ public class CreateOrderCommandHandlerTests
         var result = await handler.Handle(command);
 
         // Assert
-        Assert.False(result.Success);
-        Assert.Equal(10, result.totalPrice);
+        Assert.Equal(20, result.totalPrice);
     }
-
+    
     [Fact]
     public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()
     {
@@ -95,11 +136,6 @@ public class CreateOrderCommandHandlerTests
             {
                 Unit = WeightUnit.Kg,
                 Value = 31
-            },
-            Price = new Price()
-            {
-                Amount = 10,
-                Currency = Currency.EUR
             }
         };
 

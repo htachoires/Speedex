@@ -44,12 +44,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             var productData = await _productRepository.GetProductById(product.ProductId, cancellationToken);
             if (productData != null)
             {
-                if (productData.Weight != null)
-                {
-                    
-                }
-                totalWeight += (decimal)productData.Weight.Value * product.Quantity;
-                totalPrice += productData.Price.ToEUR().Amount * product.Quantity;
+                 totalWeight += (decimal)productData.Weight.Value * product.Quantity; 
+                 totalPrice += productData.Price.ToEUR().Amount * product.Quantity;
             }
         }
 
@@ -67,6 +63,31 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                     }
                 },
                 totalPrice = totalPrice,
+            };
+        }
+        
+        var totalVolume=0;
+        foreach (var product in command.Products)
+        {
+            var productData = await _productRepository.GetProductById(product.ProductId, cancellationToken);
+            if (productData != null)
+            {
+                totalVolume += (int)productData.Dimensions.VolumeInCubicMeter * product.Quantity;
+            }
+        }
+        if(totalVolume>1)
+        {
+            return new CreateOrderResult
+            {
+                Success = false,
+                Errors = new List<CreateOrderResult.ValidationError>
+                {
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Command volume is more than 1 cubic meter",
+                        Code = "Command_VolumeExceeded_Error"
+                    }
+                }
             };
         }
 
