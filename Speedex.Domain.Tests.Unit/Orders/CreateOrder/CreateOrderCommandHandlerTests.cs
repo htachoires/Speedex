@@ -528,5 +528,55 @@ public class CreateOrderCommandHandlerTests
         Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
 
     }
+    
+    
+    [Fact]
+    public async Task Handle_Should_Return_VolumeExceeded_Result_When_Order_Volume_More_Than_1_Cubic_Meter()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+        productRepository
+            .GetProductById(Arg.Any<ProductId>(), Arg.Any<CancellationToken>())
+            .Returns(ProductBuilder.AProduct.Build());
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Dimensions = new Dimensions()
+            {
+                X = 2.0,
+                Y = 2.0,
+                Z = 2.0
+            },
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 1
+            }
+
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProducts(ACreateOrderCommandProduct
+                .WithProductId(product.ProductId)
+                .WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command volume is more than 1m\u00b3", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_Volume_Exceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
 
 }

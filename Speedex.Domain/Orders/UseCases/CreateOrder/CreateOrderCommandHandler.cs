@@ -3,7 +3,6 @@ using Speedex.Domain.Commons;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Products.Repositories;
-using Speedex.Domain.Products;
 
 namespace Speedex.Domain.Orders.UseCases.CreateOrder;
 
@@ -12,7 +11,6 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IValidator<CreateOrderCommand> _commandValidator;
-    private readonly IProductRepository _productRepository;
 
     public CreateOrderCommandHandler(
         IOrderRepository orderRepository,
@@ -47,11 +45,13 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         //TODO: Check that weight in command is respected ( <30kg) for all containing products
         // hint use productRepository
         double totalWeight = 0;
+        double totalVolume = 0.0;
         foreach (var commandProduct in command.Products)
         {
             var product = await _productRepository
                 .GetProductById(commandProduct.ProductId, CancellationToken.None);
             totalWeight += product.Weight.ToKilograms().Value;
+            totalVolume += product.Dimensions.VolumeInCubicMeter;
         }
 
         if (totalWeight > 30)
@@ -65,6 +65,22 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                     {
                         Message = "Command weight is more than 30kg",
                         Code = "Command_WeightExceeded_Error"
+                    }
+                ]
+            };
+        }
+
+        if (totalVolume > 1.0)
+        {
+            return new CreateOrderResult
+            {
+                Success = false,
+                Errors =
+                [
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Command volume is more than 1m\u00b3",
+                        Code = "Command_Volume_Exceeded_Error"
                     }
                 ]
             };
