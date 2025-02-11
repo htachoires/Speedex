@@ -1,4 +1,5 @@
 using Speedex.Domain.Commons;
+using Speedex.Domain.Products;
 
 namespace Speedex.Domain.Orders.UseCases.Top3Clients;
 
@@ -12,7 +13,7 @@ public record GetTop3ClientsResult : IQueryResult
     {
         public string Firstname { get; init; }
         public string Lastname { get; init; }
-        public string Amount { get; init; }
-        public string Currency { get; init; }
+        public decimal Amount { get; init; }
+        public Currency Currency { get; init; }
     }
 }

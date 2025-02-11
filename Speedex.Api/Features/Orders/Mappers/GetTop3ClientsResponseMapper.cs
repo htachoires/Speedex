@@ -15,21 +15,21 @@ public static class GetTop3ClientsResponseMapper
                 Firstname = result.First.Firstname,
                 Lastname = result.First.Lastname,
                 Amount = result.First.Amount,
-                Currency = result.First.Currency
+                Currency = result.First.Currency.ToString()
             },
             Second = new Top3ClientsResponse.ClientResponse
             {
                 Firstname = result.Second.Firstname,
                 Lastname = result.Second.Lastname,
                 Amount = result.Second.Amount,
-                Currency = result.Second.Currency
+                Currency = result.Second.Currency.ToString()
             },
             Third = new Top3ClientsResponse.ClientResponse
             {
                 Firstname = result.Third.Firstname,
                 Lastname = result.Third.Lastname,
                 Amount = result.Third.Amount,
-                Currency = result.Third.Currency
+                Currency = result.Third.Currency.ToString()
             }
         };
     }
@@ -45,7 +45,7 @@ public record Top3ClientsResponse
     {
         public string Firstname { get; init; }
         public string Lastname { get; init; }
-        public string Amount { get; init; }
+        public decimal Amount { get; init; }
         public string Currency { get; init; }
     }
 }
