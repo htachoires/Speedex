@@ -6,6 +6,8 @@ public record CreateOrderResult : ICommandResult
 {
     public OrderId OrderId { get; init; }
     public bool Success { get; init; }
+    
+    public decimal totalPrice { get; init; }
     public List<ValidationError> Errors { get; set; }
 
     public record ValidationError

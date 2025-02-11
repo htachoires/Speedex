@@ -42,6 +42,43 @@ public class CreateOrderCommandHandlerTests
         Assert.True(result.Success);
         Assert.NotNull(result.OrderId);
     }
+    
+    
+    [Fact]
+    public async Task Handle_Should_Return_Correct_Sum_When_Order_Has_Multiple_Products()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Price = new Price()
+            {
+                Amount = 10,
+                Currency = Currency.EUR
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(10, result.totalPrice);
+    }
 
     [Fact]
     public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()
@@ -58,6 +95,11 @@ public class CreateOrderCommandHandlerTests
             {
                 Unit = WeightUnit.Kg,
                 Value = 31
+            },
+            Price = new Price()
+            {
+                Amount = 10,
+                Currency = Currency.EUR
             }
         };
 
