@@ -31,6 +31,8 @@ public static class GetOrdersResponseMapper
                 },
                 CreationDate = x.CreationDate.ToString("u"),
                 UpdateDate = x.UpdateDate.ToString("u"),
+                TotalPrice = x.TotalPrice,
+                TotalWeight = x.TotalWeight
             })
         };
     }

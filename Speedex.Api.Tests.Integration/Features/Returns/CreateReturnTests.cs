@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Speedex.Api.Features.Returns.Requests;
 using Speedex.Api.Features.Returns.Responses;
+using Speedex.Api.Tests.Integration.Features.Returns.Request;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Parcels.Repositories;
 using Speedex.Domain.Products.Repositories;
@@ -69,13 +70,13 @@ public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Progr
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        var request = new CreateReturnBodyRequest
+        var request = new CreateReturnTestBodyRequest
         {
             OrderId = Guid.NewGuid().ToString(),
             ParcelId = Guid.NewGuid().ToString(),
             Products =
             [
-                new CreateReturnBodyRequest.CreateReturnBodyRequestReturnProduct()
+                new CreateReturnTestBodyRequest.CreateReturnTestBodyRequestReturnProduct()
                 {
                     ProductId = Guid.NewGuid().ToString(),
                     Quantity = 1
@@ -98,13 +99,13 @@ public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Progr
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        var request = new CreateReturnBodyRequest
+        var request = new CreateReturnTestBodyRequest
         {
             OrderId = Guid.NewGuid().ToString(),
             ParcelId = Guid.NewGuid().ToString(),
             Products =
             [
-                new CreateReturnBodyRequest.CreateReturnBodyRequestReturnProduct()
+                new CreateReturnTestBodyRequest.CreateReturnTestBodyRequestReturnProduct()
                 {
                     ProductId = Guid.NewGuid().ToString(),
                     Quantity = 1
@@ -127,13 +128,13 @@ public class CreateReturnTests : IClassFixture<CustomWebApplicationFactory<Progr
         // Arrange
         var httpClient = _factory.CreateClient();
 
-        var request = new CreateReturnBodyRequest
+        var request = new CreateReturnTestBodyRequest
         {
             OrderId = Guid.NewGuid().ToString(),
             ParcelId = Guid.NewGuid().ToString(),
             Products =
             [
-                new CreateReturnBodyRequest.CreateReturnBodyRequestReturnProduct()
+                new CreateReturnTestBodyRequest.CreateReturnTestBodyRequestReturnProduct()
                 {
                     ProductId = Guid.NewGuid().ToString(),
                     Quantity = 1

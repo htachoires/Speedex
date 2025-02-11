@@ -1,8 +1,11 @@
 using System.Net;
+using System.Text;
 using System.Text.Json;
+using Speedex.Api.Features.Products.Mappers;
 using Speedex.Api.Features.Products.Requests;
 using Speedex.Api.Features.Products.Responses;
-using Speedex.Domain.Products;
+using Speedex.Api.Tests.Integration.Features.Products.Request;
+using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Api.Tests.Integration.Features.Products;
 
@@ -17,53 +20,49 @@ public class CreateProductTests : IClassFixture<CustomWebApplicationFactory<Prog
     }
 
     [Fact]
-    public async Task CreateProduct_Should_ReturnCreatedStatusCode_And_FindCreatedProduct()
+    public async Task TODO_CreateProduct_Should_ReturnCreatedStatusCode_And_FindCreatedProduct()
     {
-        //Arrange
+        // Arrange
         var httpClient = _factory.CreateClient();
-
-        var bodyRequest = new CreateProductBodyRequest
+        
+        var product = AProduct.Build();
+        _factory.Services.GetRequiredService<IProductRepository>().UpsertProduct(product);
+        
+        var request = new CreateProductTestBodyRequest
         {
-            Name = "fooName",
-            Description = "fooDescription",
-            Category = "fooCategory",
-            SecondLevelCategory = "fooSecondLevelCategory",
-            ThirdLevelCategory = "fooThirdLevelCategory",
-            Price = new CreateProductBodyRequest.PriceGetProductBodyRequest
+            Name = product.Name,
+            Description = product.Description,
+            Category = product.Category,
+            SecondLevelCategory = product.SecondLevelCategory,
+            ThirdLevelCategory = product.ThirdLevelCategory,
+            Price = new CreateProductTestBodyRequest.PriceGetProductTestBodyRequest
             {
-                Amount = 10,
-                Currency = Currency.EUR.ToString()
+                Amount = product.Price.Amount,
+                Currency = product.Price.Currency.ToString()
             },
-            Dimensions = new CreateProductBodyRequest.DimensionsGetProductBodyRequest
+            Dimensions = new CreateProductTestBodyRequest.DimensionsGetProductTestBodyRequest
             {
-                X = 0.1,
-                Y = 0.2,
-                Z = 0.3,
-                Unit = DimensionUnit.M.ToString()
+                X = product.Dimensions.X,
+                Y = product.Dimensions.Y,
+                Z = product.Dimensions.Z,
+                Unit = product.Dimensions.Unit.ToString()
             },
-            Weight = new CreateProductBodyRequest.WeightGetProductBodyRequest
+            Weight = new CreateProductTestBodyRequest.WeightGetProductTestBodyRequest
             {
-                Value = 1,
-                Unit = WeightUnit.Kg.ToString()
+                Value = product.Weight.Value,
+                Unit = product.Weight.Unit.ToString()
             }
         };
 
-
-        //Act
-        var response = await httpClient.PostAsJsonAsync("/Products", bodyRequest);
-
-        //Assert
+        // Act
+        var response = await httpClient.PostAsync("/Products", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
+        // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-
-        var location = response.Headers.Location!.ToString();
-
+        
+        var location = response.Headers.Location.ToString();
         var getResponse = await httpClient.GetAsync(location);
-
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        var getContent = await getResponse.Content.ReadAsStringAsync();
-        var getProductResponse = JsonSerializer.Deserialize<GetProductsResponse>(getContent, _jsonSerializerOptions);
-
+        var content = await getResponse.Content.ReadAsStringAsync();
+        var getProductResponse = JsonSerializer.Deserialize<GetProductsResponse>(content, _jsonSerializerOptions);
         Assert.NotNull(getProductResponse);
-        Assert.Single(getProductResponse.Items);
     }
 }

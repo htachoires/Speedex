@@ -4,6 +4,7 @@ using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Products;
+using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Domain.Tests.Unit.Orders.CreateOrder;
 
@@ -306,7 +307,11 @@ public class CreateOrderCommandHandlerTests
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
-            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+            .Returns(new UpsertOrderResult
+            {
+                Status = UpsertOrderResult.UpsertStatus.Success
+            });
+
 
         var recipient = ACreateOrderRecipient.WithCountry("USA");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
@@ -317,5 +322,164 @@ public class CreateOrderCommandHandlerTests
 
         // Assert
         orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Recipient.Country == "USA"));
+    }
+
+    [Fact]
+    public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 31
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command weight is more than 30kg", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_Success_Result_When_Order_Weight_Less_Than_30()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Gr,
+                Value = 31
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        orderRepository
+            .UpsertOrder(Arg.Any<Order>())
+            .Returns(new UpsertOrderResult
+            {
+                Status = UpsertOrderResult.UpsertStatus.Success
+            });
+        
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.True(result.Success);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_VolumeExceeded_Result_When_Order_Volume_More_Than_1()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Dimensions = new Dimensions()
+            {
+                X = 10,
+                Y = 10,
+                Z = 10,
+                Unit = DimensionUnit.M
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command volume is more than 1 m³", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_VolumeExceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_VolumeValid_Result_When_Order_Volume_More_Than_1()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Dimensions = new Dimensions()
+            {
+                X = 10,
+                Y = 10,
+                Z = 10,
+                Unit = DimensionUnit.Mm
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        orderRepository
+            .UpsertOrder(Arg.Any<Order>())
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.True(result.Success);
     }
 }
