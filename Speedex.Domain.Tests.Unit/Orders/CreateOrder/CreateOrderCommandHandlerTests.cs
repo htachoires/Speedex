@@ -98,10 +98,6 @@ public class CreateOrderCommandHandlerTests
         var orderRepository = Substitute.For<IOrderRepository>();
         var productRepository = Substitute.For<IProductRepository>();
 
-        productRepository
-            .GetProductById(Arg.Any<ProductId>(), Arg.Any<CancellationToken>())
-            .Returns(ProductBuilder.AProduct.Build());
-
         var product = new Product()
         {
             ProductId = new ProductId("productId"),

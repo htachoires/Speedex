@@ -12,6 +12,7 @@ public record GetTop3ClientsResult : IQueryResult
     public record ClientResult
     {
         public string Firstname { get; init; }
+        public string Email { get; init; }
         public string Lastname { get; init; }
         public decimal Amount { get; init; }
         public Currency Currency { get; init; }
