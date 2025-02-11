@@ -87,6 +87,11 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+
+        orderRepository
+            .UpsertOrder(Arg.Any<Order>())
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+
         var productRepository = Substitute.For<IProductRepository>();
 
 
