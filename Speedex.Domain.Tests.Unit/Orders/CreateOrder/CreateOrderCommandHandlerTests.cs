@@ -4,6 +4,7 @@ using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
 using Speedex.Domain.Products;
+using Speedex.Domain.Products.Repositories;
 
 namespace Speedex.Domain.Tests.Unit.Orders.CreateOrder;
 
@@ -38,6 +39,43 @@ public class CreateOrderCommandHandlerTests
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.OrderId);
+    }
+
+    [Fact]
+    public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productId"),
+            Weight = new Weight()
+            {
+                Unit = WeightUnit.Kg,
+                Value = 31
+            }
+        };
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command weight is more than 30kg", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
     }
 
     [Theory]
