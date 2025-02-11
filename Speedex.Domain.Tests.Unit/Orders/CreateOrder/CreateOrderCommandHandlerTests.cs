@@ -64,7 +64,9 @@ public class CreateOrderCommandHandlerTests
             .Returns(product);
 
         var command = ACreateOrderCommand
-            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .WithProduct(ACreateOrderCommandProduct
+                .WithProductId(product.ProductId)
+                .WithQuantity(1))
             .Build();
 
         var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);

@@ -3,6 +3,7 @@ using Speedex.Domain.Commons;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Products.Repositories;
+using Speedex.Domain.Product;
 
 namespace Speedex.Domain.Orders.UseCases.CreateOrder;
 
@@ -42,7 +43,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         
         foreach (var p in command.Products)
         {
-            if(products.GetProductById(p.ProductId).){}
+            Product prod = products.GetProductById(p.ProductId, cancellationToken);
+            if(prod.){}
         
         var createdOrder = command.ToOrder();
 
