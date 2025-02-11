@@ -2,6 +2,7 @@ using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Orders.UseCases.GetOrders;
+using Speedex.Domain.Orders.UseCases.VerifyProduct;
 using Speedex.Domain.Products;
 
 namespace Speedex.Domain.Tests.Unit.Orders.GetOrders;
@@ -136,5 +137,35 @@ public class GetOrdersQueryHandlerTests
 
         // Assert
         orderRepository.Received(1).GetOrders(Arg.Is<GetOrdersDto>(dto => dto.ProductId == productId));
+    }
+    
+    //rvelia
+    [Fact]
+    public async Task Adding_Product_To_Package_Should_Fail_If_Not_In_Order()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var orderId = new OrderId("order-123");
+        var validProductId = new ProductId("valid-product");
+        var invalidProductId = new ProductId("invalid-product");
+
+        var order = AnOrder.Id(orderId)
+            .WithProducts(new List<(ProductId, int)>
+            {
+                (validProductId, 1)
+            })
+            .Build();
+
+        orderRepository.GetOrderById(orderId).Returns(Task.FromResult<Order?>(order));
+
+        var handler = new VerifyProductInOrderHandler(orderRepository);
+
+        // Act & Assert
+        await handler.VerifyProduct(orderId, validProductId); // Doit réussir
+
+        await Assert.ThrowsAsync<ProductNotInOrderException>(() =>
+                handler.VerifyProduct(orderId, invalidProductId) // Doit échouer
+        );
     }
 }

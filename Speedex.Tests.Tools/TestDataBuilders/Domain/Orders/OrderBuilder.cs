@@ -1,4 +1,5 @@
 using Speedex.Domain.Orders;
+using Speedex.Domain.Products;
 
 namespace Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 
@@ -27,7 +28,7 @@ public class OrderBuilder
         return new Order
         {
             OrderId = _orderId,
-            Products = _products.Select(x => x.Build()),
+            Products = _products.Select(x => x.Build()).ToList(),
             DeliveryType = _deliveryType,
             Recipient = _recipient.Build(),
             CreationDate = _creationDate,
@@ -38,6 +39,15 @@ public class OrderBuilder
     public OrderBuilder Id(OrderId id)
     {
         _orderId = id;
+        return this;
+    }
+    
+    public OrderBuilder WithProducts(IEnumerable<(ProductId productId, int quantity)> products)
+    {
+        _products = products
+            .Select(p => OrderProductBuilder.AnOrderProduct
+                .WithProductId(p.productId)
+                .WithQuantity(p.quantity));
         return this;
     }
 }

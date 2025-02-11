@@ -39,6 +39,27 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                     }).ToList()
             };
         }
+        
+        const decimal maxAllowedVolume = 1.0m; // 1m³ max
+        decimal totalVolume = command.Products
+            .Sum(p => (p.Length * p.Width * p.Height) * p.Quantity);
+
+        if (totalVolume > maxAllowedVolume)
+        {
+            return new CreateOrderResult
+            {
+                Success = false,
+                Errors = new List<CreateOrderResult.ValidationError>
+                {
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Total volume exceeds limit",
+                        PropertyName = "Products",
+                        Code = "VolumeExceeded"
+                    }
+                }
+            };
+        }
 
         //TODO: Check that weight in command is respected ( <30kg) for all containing products
         // hint use productRepository

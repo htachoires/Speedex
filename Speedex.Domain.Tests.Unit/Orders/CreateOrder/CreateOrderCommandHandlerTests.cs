@@ -3,6 +3,7 @@ using Speedex.Domain.Orders;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Orders.UseCases.CreateOrder;
+using Speedex.Domain.Orders.UseCases.VerifyProduct;
 using Speedex.Domain.Products;
 using Speedex.Domain.Products.Repositories;
 using Speedex.Tests.Tools.TestDataBuilders.Domain.Products;
@@ -475,5 +476,57 @@ public class CreateOrderCommandHandlerTests
 
         // Assert
         orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Recipient.Country == "USA"));
+    }
+    
+    //rvelia
+    [Fact]
+    public async Task Handle_Should_Return_Failure_If_Total_Volume_Exceeds_Limit()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var largeProduct = ACreateOrderCommandProduct
+            .WithDimensions(1.1m, 1.0m, 1.0m) // Produit de volume 1.1m³
+            .WithQuantity(1);
+
+        var command = ACreateOrderCommand.WithProduct(largeProduct).Build();
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Contains("Total volume exceeds limit", result.Errors.Select(e => e.Message));
+    }
+    
+    //rvelia
+    [Fact]
+    public async Task Adding_Product_To_Package_Should_Fail_If_Quantity_Exceeds_Order()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var orderId = new OrderId("order-123");
+        var productId = new ProductId("product-456");
+
+        var order = AnOrder
+            .Id(orderId)
+            .WithProducts(new List<(ProductId, int)>
+            {
+                (productId, 2) // Commande contient 2 unités du produit
+            })
+            .Build();
+
+        orderRepository.GetOrderById(orderId).Returns(Task.FromResult<Order?>(order));
+
+        var handler = new VerifyProductQuantityHandler(orderRepository);
+
+        // Act & Assert
+        await handler.VerifyProductQuantity(orderId, productId, 2); // Doit réussir
+
+        await Assert.ThrowsAsync<ProductQuantityExceededException>(() =>
+                handler.VerifyProductQuantity(orderId, productId, 3) // Doit échouer (3 > 2)
+        );
     }
 }
