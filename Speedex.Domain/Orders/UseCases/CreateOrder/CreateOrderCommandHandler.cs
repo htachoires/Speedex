@@ -49,6 +49,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
 
         decimal total = 0;
         decimal weightInKg = 0;
+        double volumeTotal = 0;
         if (_productRepository != null)
         {
             foreach (var product in command.Products)
@@ -75,6 +76,13 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                         total += productDto.Price.Amount * product.Quantity;
                     }
                 }
+
+                if (productDto != null && productDto.Dimensions != null && productDto.Dimensions.X != null &&
+                    productDto.Dimensions.Y != null && productDto.Dimensions.Z != null &&
+                    productDto.Dimensions.Unit != null)
+                {
+                    volumeTotal += productDto.Dimensions.VolumeInCubicMeter;
+                }
             }
 
             command.Price = total;
@@ -95,6 +103,23 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                             Message = "Command weight is more than 30kg",
                             PropertyName = "Weight",
                             Code = "Command_WeightExceeded_Error"
+                        }
+                    }
+                };
+            }
+
+            if (volumeTotal > 1)
+            {
+                return new CreateOrderResult
+                {
+                    Success = false,
+                    Errors = new List<CreateOrderResult.ValidationError>
+                    {
+                        new CreateOrderResult.ValidationError
+                        {
+                            Message = "Command volume is more than 1 m³",
+                            PropertyName = "Volume",
+                            Code = "Command_VolumeExceeded_Error"
                         }
                     }
                 };
