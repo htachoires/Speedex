@@ -8,6 +8,8 @@ public record CreateOrderCommand : ICommand
     public IEnumerable<Product> Products { get; init; }
     public DeliveryType DeliveryType { get; init; }
     public CreateOrderRecipient Recipient { get; init; }
+    
+    public decimal Price { get; set; }
 
     public record Product
     {

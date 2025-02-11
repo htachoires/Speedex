@@ -31,7 +31,8 @@ public static class CreateOrderCommandMapper
                 Country = command.Recipient.Country
             },
             CreationDate = now,
-            UpdateDate = now
+            UpdateDate = now,
+            TotalPrice = command.Price
         };
     }
 }

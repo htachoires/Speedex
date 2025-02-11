@@ -1,12 +1,13 @@
-namespace Speedex.Api.Features.Orders.Requests;
+﻿namespace Speedex.Api.Tests.Integration.Features.Orders.Request;
 
-public record CreateOrderBodyRequest
+public class CreateOrderTestBodyRequest
 {
     public string? DeliveryType { get; init; }
-    public IEnumerable<ProductBodyRequest>? Products { get; init; }
-    public RecipientBodyRequest? Recipient { get; init; }
-
-    public record ProductBodyRequest
+    public IEnumerable<ProductTestBodyRequest>? Products { get; init; }
+    public RecipientTestBodyRequest? Recipient { get; init; }
+    
+    
+    public record ProductTestBodyRequest
     {
         public string? ProductId { get; init; }
         public int? Quantity { get; init; }
@@ -14,7 +15,7 @@ public record CreateOrderBodyRequest
         public decimal? TotalPrice { get; init; } 
     }
 
-    public record RecipientBodyRequest
+    public record RecipientTestBodyRequest
     {
         public string? FirstName { get; init; }
         public string? LastName { get; init; }

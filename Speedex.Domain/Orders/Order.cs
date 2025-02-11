@@ -10,6 +10,8 @@ public record Order
     public Recipient Recipient { get; init; }
     public DateTime CreationDate { get; init; }
     public DateTime UpdateDate { get; init; }
+    public decimal TotalPrice { get; init; } = 0;
+    
 }
 
 public enum DeliveryType
