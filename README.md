@@ -53,11 +53,11 @@ envoyez-le par email :
 
 ---
 
-## US-01 - Le nom du destinataire de la commande doit être en majuscule ✉️
+## ~~US-01 - Le nom du destinataire de la commande doit être en majuscule ✉️~~
 
 En tant que **responsable logistique**, je veux que le nom du destinataire d’une
 commande soit toujours formaté en majuscule afin de garantir la cohérence et la
-lisibilité des informations sur les étiquettes de livraison.
+lisibilité des informations sur les étiquettes de livraison. 
 
 ## US-02 - Ajouter un filtre pour les produits en fonction de la catégorie 🛍️
 
@@ -72,13 +72,13 @@ les
 commandes associées à un client à partir de son adresse email pour répondre plus
 rapidement aux demandes de suivi.
 
-## US-04 - Vérifier que le poids total des produits d’une commande est inférieur à 30 kg ⚖️
+## ~~US-04 - Vérifier que le poids total des produits d’une commande est inférieur à 30 kg ⚖️~~
 
 En tant que **responsable entrepôt**, je veux m'assurer que chaque colis ne
 dépasse
 pas 30 kg pour respecter les règles de transport des partenaires logistiques.
 
-## US-05 - Vérifier que le volume total des produits est inférieur à 1m³ 📦
+## ~~US-05 - Vérifier que le volume total des produits est inférieur à 1m³ 📦~~
 
 En tant que **responsable entrepôt**, je veux garantir que le volume des
 produits
