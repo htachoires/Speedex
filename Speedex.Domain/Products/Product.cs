@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Speedex.Domain.Products;
 
 public record Product
@@ -9,8 +11,9 @@ public record Product
     public string SecondLevelCategory { get; init; }
     public string ThirdLevelCategory { get; init; }
     public Price Price { get; init; }
-    public Dimensions Dimensions { get; init; }
-    public Weight Weight { get; init; }
+    public Dimensions Dimensions { get; init; } = new Dimensions { X = 0, Y = 0, Z = 0, Unit = DimensionUnit.M };
+    
+    public Weight Weight { get; init; } = new Weight { Value = 0, Unit = WeightUnit.Kg };
     public DateTime CreationDate { get; init; }
     public DateTime UpdateDate { get; init; }
 }

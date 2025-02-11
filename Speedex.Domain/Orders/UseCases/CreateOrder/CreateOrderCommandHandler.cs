@@ -63,6 +63,31 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                 }
             };
         }
+        
+        var totalVolume=0;
+        foreach (var product in command.Products)
+        {
+            var productData = await _productRepository.GetProductById(product.ProductId, cancellationToken);
+            if (productData != null)
+            {
+                totalVolume += (int)productData.Dimensions.VolumeInCubicMeter * product.Quantity;
+            }
+        }
+        if(totalVolume>1)
+        {
+            return new CreateOrderResult
+            {
+                Success = false,
+                Errors = new List<CreateOrderResult.ValidationError>
+                {
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Command volume is more than 1 cubic meter",
+                        Code = "Command_VolumeExceeded_Error"
+                    }
+                }
+            };
+        }
 
         var createdOrder = command.ToOrder();
         var result = _orderRepository.UpsertOrder(createdOrder);
