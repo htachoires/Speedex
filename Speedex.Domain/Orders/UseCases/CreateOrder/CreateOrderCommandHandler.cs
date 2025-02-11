@@ -34,6 +34,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             };
         }
 
+        //TODO: Check that weight in command is respected ( <30kg) for all containing products
+        // hint use productRepository
         var createdOrder = command.ToOrder();
 
         var result = _orderRepository.UpsertOrder(createdOrder);
