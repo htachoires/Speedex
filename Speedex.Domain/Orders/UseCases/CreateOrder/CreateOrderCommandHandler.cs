@@ -86,11 +86,11 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             };
         }
 
-        var createdOrder = command.ToOrder();
+        Order createdOrder = command.ToOrder();   
     
         var result = _orderRepository.UpsertOrder(createdOrder);
 
-        if (result.Status != UpsertOrderResult.UpsertStatus.Success)
+        if (result != null && result.Status != UpsertOrderResult.UpsertStatus.Success)
         {
             return new CreateOrderResult
             {
@@ -98,7 +98,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             };
         }
 
-        ;
+        
 
         return new CreateOrderResult
         {
