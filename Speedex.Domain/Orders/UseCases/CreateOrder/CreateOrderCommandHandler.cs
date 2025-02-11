@@ -3,7 +3,7 @@ using Speedex.Domain.Commons;
 using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Products.Repositories;
-using Speedex.Domain.Product;
+using Speedex.Domain.Products;
 
 namespace Speedex.Domain.Orders.UseCases.CreateOrder;
 
@@ -11,13 +11,15 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
-
     private readonly IValidator<CreateOrderCommand> _commandValidator;
 
-    public CreateOrderCommandHandler(IOrderRepository orderRepository, IValidator<CreateOrderCommand> commandValidator)
+    public CreateOrderCommandHandler(IOrderRepository orderRepository, IValidator<CreateOrderCommand> commandValidator,
+        IProductRepository productRepository)
     {
         _orderRepository = orderRepository;
         _commandValidator = commandValidator;
+        _productRepository = productRepository;
+
     }
 
     public async Task<CreateOrderResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken = default)
@@ -39,15 +41,45 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             };
         }
 
-        var products = _productRepository;
-        
+        ;
+
+        var productRepository = _productRepository;
+        double totalWeight = 0.0;
+
         foreach (var p in command.Products)
         {
-            Product prod = products.GetProductById(p.ProductId, cancellationToken);
-            if(prod.){}
-        
-        var createdOrder = command.ToOrder();
+            Product prod = (await productRepository.GetProductById(p.ProductId, cancellationToken))!;
+            if ((prod.Weight.Value > 30.0 && prod.Weight.Unit == WeightUnit.Kg) ||
+                (prod.Weight.Value > 30_000.0 && prod.Weight.Unit == WeightUnit.Gr) ||
+                (prod.Weight.Value > 30_000_000.0 && prod.Weight.Unit == WeightUnit.Mg))
+            {
+                return new CreateOrderResult
+                {
+                    Success = false
+                };
+            }
 
+
+        }
+
+        ;
+
+
+
+        if (totalWeight > 30.0)
+        {
+            return new CreateOrderResult
+            {
+                Success = false
+            };
+        }
+
+        ;
+
+
+
+        var createdOrder = command.ToOrder();
+    
         var result = _orderRepository.UpsertOrder(createdOrder);
 
         if (result.Status != UpsertOrderResult.UpsertStatus.Success)
@@ -57,6 +89,8 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
                 Success = false
             };
         }
+
+        ;
 
         return new CreateOrderResult
         {
