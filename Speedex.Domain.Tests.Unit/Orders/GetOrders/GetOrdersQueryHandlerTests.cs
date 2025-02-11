@@ -139,6 +139,7 @@ public class GetOrdersQueryHandlerTests
         orderRepository.Received(1).GetOrders(Arg.Is<GetOrdersDto>(dto => dto.ProductId == productId));
     }
     
+    //rvelia
     [Fact]
     public async Task Adding_Product_To_Package_Should_Fail_If_Not_In_Order()
     {
@@ -150,7 +151,10 @@ public class GetOrdersQueryHandlerTests
         var invalidProductId = new ProductId("invalid-product");
 
         var order = AnOrder.Id(orderId)
-            .WithProducts(new List<ProductId> { validProductId }) // Commande ne contient qu'un produit
+            .WithProducts(new List<(ProductId, int)>
+            {
+                (validProductId, 1)
+            })
             .Build();
 
         orderRepository.GetOrderById(orderId).Returns(Task.FromResult<Order?>(order));

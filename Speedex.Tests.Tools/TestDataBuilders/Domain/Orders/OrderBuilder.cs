@@ -42,11 +42,12 @@ public class OrderBuilder
         return this;
     }
     
-    public OrderBuilder WithProducts(IEnumerable<ProductId> productIds)
+    public OrderBuilder WithProducts(IEnumerable<(ProductId productId, int quantity)> products)
     {
-        _products = productIds
-            .Select(id => OrderProductBuilder.AnOrderProduct.WithProductId(id))
-            .ToList();
+        _products = products
+            .Select(p => OrderProductBuilder.AnOrderProduct
+                .WithProductId(p.productId)
+                .WithQuantity(p.quantity));
         return this;
     }
 }
