@@ -8,6 +8,7 @@ public static class CreateOrderCommandMapper
 
         //Tip: we can see stored variable in the debug console
         var orderId = new OrderId(Guid.NewGuid().ToString());
+        
 
         return new Order
         {

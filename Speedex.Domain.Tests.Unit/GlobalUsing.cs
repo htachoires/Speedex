@@ -5,3 +5,4 @@ global using static Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.Queries.G
 global using static Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.OrderBuilder;
 global using static Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.RecipientBuilder;
 global using static Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.OrderProductBuilder;
+global using static Speedex.Tests.Tools.TestDataBuilders.Domain.Products.ProductBuilder;

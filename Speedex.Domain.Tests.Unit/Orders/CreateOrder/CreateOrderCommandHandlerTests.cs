@@ -24,14 +24,21 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
+        var product = AProduct.Build();
+        
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
+
         var command = ACreateOrderCommand.Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -49,26 +56,22 @@ public class CreateOrderCommandHandlerTests
         var productRepository = Substitute.For<IProductRepository>();
 
 
-        var product = new Product()
-        {
-            ProductId = new ProductId("productId"),
-            Weight = new Weight()
-            {
-                Unit = WeightUnit.Kg,
-                Value = 31
-            }
-        };
+        var product = AProduct.WithWeight(31, WeightUnit.Kg).Build();
+        
+        orderRepository
+            .UpsertOrder(Arg.Any<Order>())
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         productRepository
-            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
             .Returns(product);
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         var command = ACreateOrderCommand
             .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
             .Build();
-
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
-
+        
         // Act
         var result = await handler.Handle(command);
 
@@ -76,6 +79,34 @@ public class CreateOrderCommandHandlerTests
         Assert.False(result.Success);
         Assert.Equal("Command weight is more than 30kg", result.Errors.FirstOrDefault().Message);
         Assert.Equal("Command_WeightExceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_VolumeExceeded_Result_When_Order_Mesures_More_Than_1_m3()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+        var product = AProduct.WithDimensions(2, 2, 2, DimensionUnit.M).Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Command volume is more than 1m3", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Command_VolumeExceeded_Error", result.Errors.FirstOrDefault().Code);
     }
 
     [Theory]
@@ -85,6 +116,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         Order? order = null;
         orderRepository
@@ -95,14 +134,16 @@ public class CreateOrderCommandHandlerTests
             .WithRecipient(ACreateOrderRecipient.WithLastName(lastName))
             .Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
-        await handler.Handle(command);
+        var result = await handler.Handle(command);
 
         // Assert
-        Assert.NotNull(order);
-        Assert.Equal(expectedLastName, order.Recipient.LastName);
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.NotNull(command.Recipient);
+        Assert.Equal(expectedLastName, command.Recipient.LastName);
     }
 
     [Fact]
@@ -110,6 +151,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == product.ProductId), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -117,7 +166,7 @@ public class CreateOrderCommandHandlerTests
 
         var command = ACreateOrderCommand.Build();
 
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -132,13 +181,21 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var command = ACreateOrderCommand.Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         var result = await handler.Handle(command);
@@ -152,21 +209,29 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
+        
         var productId = new ProductId("product-1");
-        var product = ACreateOrderCommandProduct.WithProductId(productId);
-        var command = ACreateOrderCommand.WithProduct(product).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var orderProduct = ACreateOrderCommandProduct.WithProductId(productId);
+        var command = ACreateOrderCommand.WithProduct(orderProduct).Build();
+        var product = AProduct.Id(productId).Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> product.ProductId == p), CancellationToken.None)
+            .Returns(product);
+        
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
 
         // Assert
-        orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Products.Any(p => p.ProductId == productId)));
+        orderRepository.UpsertOrder(Arg.Is<Order>(o => o.Products.Any(p => p.ProductId == productId)));
     }
 
     [Fact]
@@ -174,14 +239,22 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+        var orderProduct = ACreateOrderCommandProduct.WithQuantity(2);
+        var command = ACreateOrderCommand.WithProduct(orderProduct).Build();
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
-        var product = ACreateOrderCommandProduct.WithQuantity(2);
-        var command = ACreateOrderCommand.WithProduct(product).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -195,13 +268,21 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var command = ACreateOrderCommand.WithDeliveryType(DeliveryType.Express).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -215,6 +296,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -222,7 +311,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithFirstName("John");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -236,6 +325,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -243,7 +340,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithEmail("john.doe@example.com");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -257,6 +354,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -264,7 +369,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithPhone("1234567890");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -278,19 +383,29 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
 
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => true), CancellationToken.None)
+            .Returns(product);
+        
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
             .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
 
         var recipient = ACreateOrderRecipient.WithAddress("123 Main St");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
-        await handler.Handle(command);
+        var result = await handler.Handle(command);
 
         // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
         orderRepository.Received(1).UpsertOrder(Arg.Is<Order>(o => o.Recipient.Address == "123 Main St"));
     }
 
@@ -299,6 +414,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -306,7 +429,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithAdditionalAddress("Apt 4");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -320,6 +443,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -327,7 +458,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithCity("New York");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
@@ -341,6 +472,14 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
 
         orderRepository
             .UpsertOrder(Arg.Any<Order>())
@@ -348,7 +487,7 @@ public class CreateOrderCommandHandlerTests
 
         var recipient = ACreateOrderRecipient.WithCountry("USA");
         var command = ACreateOrderCommand.WithRecipient(recipient).Build();
-        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator);
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
 
         // Act
         await handler.Handle(command);
