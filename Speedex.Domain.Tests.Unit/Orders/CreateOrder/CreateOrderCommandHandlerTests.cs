@@ -47,7 +47,7 @@ public class CreateOrderCommandHandlerTests
     {
         // Arrange
         var orderRepository = Substitute.For<IOrderRepository>();
-        var productRepository = Substitute.F<or<IProductRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
         
         var product = new Product()
         {
