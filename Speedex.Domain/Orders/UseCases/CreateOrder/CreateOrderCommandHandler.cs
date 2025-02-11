@@ -12,8 +12,11 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IValidator<CreateOrderCommand> _commandValidator;
+    private readonly IProductRepository _productRepository;
 
-    public CreateOrderCommandHandler(IOrderRepository orderRepository, IValidator<CreateOrderCommand> commandValidator,
+    public CreateOrderCommandHandler(
+        IOrderRepository orderRepository,
+        IValidator<CreateOrderCommand> commandValidator,
         IProductRepository productRepository)
     {
         _orderRepository = orderRepository;
@@ -41,42 +44,31 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
             };
         }
 
-        ;
-
-        var productRepository = _productRepository;
-        double totalWeight = 0.0;
-
-        foreach (var p in command.Products)
+        //TODO: Check that weight in command is respected ( <30kg) for all containing products
+        // hint use productRepository
+        double totalWeight = 0;
+        foreach (var commandProduct in command.Products)
         {
-            Product prod = (await productRepository.GetProductById(p.ProductId, cancellationToken))!;
-            if ((prod.Weight.Value > 30.0 && prod.Weight.Unit == WeightUnit.Kg) ||
-                (prod.Weight.Value > 30_000.0 && prod.Weight.Unit == WeightUnit.Gr) ||
-                (prod.Weight.Value > 30_000_000.0 && prod.Weight.Unit == WeightUnit.Mg))
-            {
-                return new CreateOrderResult
-                {
-                    Success = false
-                };
-            }
-
-
+            var product = await _productRepository
+                .GetProductById(commandProduct.ProductId, CancellationToken.None);
+            totalWeight += product.Weight.ToKilograms().Value;
         }
 
-        ;
-
-
-
-        if (totalWeight > 30.0)
+        if (totalWeight > 30)
         {
             return new CreateOrderResult
             {
-                Success = false
+                Success = false,
+                Errors =
+                [
+                    new CreateOrderResult.ValidationError
+                    {
+                        Message = "Command weight is more than 30kg",
+                        Code = "Command_WeightExceeded_Error"
+                    }
+                ]
             };
         }
-
-        ;
-
-
 
         var createdOrder = command.ToOrder();
     
