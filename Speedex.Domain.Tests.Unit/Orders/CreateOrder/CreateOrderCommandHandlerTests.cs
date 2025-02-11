@@ -47,6 +47,54 @@ public class CreateOrderCommandHandlerTests
         Assert.True(result.Success);
         Assert.NotNull(result.OrderId);
     }
+    
+    [Fact]
+    public async Task Handle_Should_Return_Order_With_Correct_Amount_of_Products()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+
+        Order? order = null;
+        orderRepository
+            .UpsertOrder(Arg.Do<Order>(or => { order = or; }))
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+        var id1 = new ProductId("product1");
+        var id2 = new ProductId("product2");
+        var qty1 = 1;
+        var qty2 = 2;
+        var orderProduct1 = ACreateOrderCommandProduct
+            .WithProductId(id1)
+            .WithQuantity(qty1);
+        var orderProduct2 = ACreateOrderCommandProduct
+            .WithProductId(id2)
+            .WithQuantity(qty2);
+        var command = ACreateOrderCommand
+            .WithProducts(orderProduct1, orderProduct2)
+            .Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == id1),
+                CancellationToken.None)
+            .Returns(AProduct.Id(id1).Build());
+        
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p => p == id2),
+                CancellationToken.None)
+            .Returns(AProduct.Id(id2).Build());
+        
+        
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.NotNull(order!.Products);
+        Assert.True(order.Products.All(product => product.ProductId == id1 ? product.Quantity == qty1 : product.ProductId == id2 && product.Quantity == qty2));
+    }
 
     [Fact]
     public async Task Handle_Should_Return_WeightExceeded_Result_When_Order_Weight_More_Than_30()
@@ -82,6 +130,37 @@ public class CreateOrderCommandHandlerTests
     }
     
     [Fact]
+    public async Task Handle_Should_Return_True_If_Order_Contains_Given_Products()
+    {
+        // Arrange
+        var orderRepository = Substitute.For<IOrderRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        
+        var product = AProduct.Build();
+
+        productRepository
+            .GetProductById(Arg.Is<ProductId>(p=> true), CancellationToken.None)
+            .Returns(product);
+
+        Order? order = null;
+        orderRepository
+            .UpsertOrder(Arg.Do<Order>(or => { order = or; }))
+            .Returns(new UpsertOrderResult { Status = UpsertOrderResult.UpsertStatus.Success });
+
+        var command = ACreateOrderCommand
+            .WithProduct(ACreateOrderCommandProduct.WithProductId(product.ProductId).WithQuantity(1))
+            .Build();
+
+        var handler = new CreateOrderCommandHandler(orderRepository, _commandValidator, productRepository);
+
+        // Act
+        var result = await handler.Handle(command);
+
+        // Assert
+        Assert.Contains(order!.Products, p => p.ProductId == product.ProductId);
+    }
+    
+    [Fact]
     public async Task Handle_Should_Return_VolumeExceeded_Result_When_Order_Mesures_More_Than_1_m3()
     {
         // Arrange
@@ -112,6 +191,7 @@ public class CreateOrderCommandHandlerTests
     [Theory]
     [InlineData("Doe", "DOE")]
     [InlineData("test", "TEST")]
+    
     public async Task Handle_Should_UpperCase_LastName_When_Order_Is_Created_Successfully(string lastName, string expectedLastName)
     {
         // Arrange
@@ -142,8 +222,8 @@ public class CreateOrderCommandHandlerTests
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(command.Recipient);
-        Assert.Equal(expectedLastName, command.Recipient.LastName);
+        Assert.NotNull(order!.Recipient);
+        Assert.Equal(expectedLastName, order.Recipient.LastName);
     }
 
     [Fact]
