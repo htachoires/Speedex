@@ -10,6 +10,8 @@ public record CreateOrderCommand : ICommand
     public CreateOrderRecipient Recipient { get; init; }
     
     public decimal Price { get; set; }
+    
+    public decimal Weight { get; set; }
 
     public record Product
     {

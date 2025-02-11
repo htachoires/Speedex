@@ -10,8 +10,6 @@ public record CreateOrderBodyRequest
     {
         public string? ProductId { get; init; }
         public int? Quantity { get; init; }
-        
-        public decimal? TotalPrice { get; init; } 
     }
 
     public record RecipientBodyRequest

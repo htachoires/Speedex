@@ -48,20 +48,54 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         }
         
         decimal total = 0;
-        
+        decimal weightInKg = 0;
         if (_productRepository != null)
         {
             foreach (var product in command.Products)
             {
                 var productDto = await _productRepository.GetProductById(product.ProductId, cancellationToken);
-                if (productDto != null)
+                if (productDto != null && productDto.Weight != null && productDto.Weight.Unit != null)
                 {
-                    total += productDto.Price.Amount * product.Quantity;
+                    decimal weight = (decimal)productDto.Weight.Value;
+                    switch (productDto.Weight.Unit)
+                    {
+                        case WeightUnit.Kg:
+                            weightInKg += weight * product.Quantity;
+                            break;
+                        case WeightUnit.Gr:
+                            weightInKg += (weight / 1000) * product.Quantity; // Convert grams to kilograms
+                            break;
+                        case WeightUnit.Mg:
+                            weightInKg += (weight / 1000000) * product.Quantity; // Convert milligrams to kilograms
+                            break;
+                    }
+
+                    if (productDto.Price != null)
+                    {
+                        total += productDto.Price.Amount * product.Quantity;
+                    }
                 }
             }
 
-
             command.Price = total;
+            command.Weight = weightInKg;
+            
+            if (command.Weight > 30)
+            {
+                return new CreateOrderResult
+                {
+                    Success = false,
+                    Errors = new List<CreateOrderResult.ValidationError>
+                    {
+                        new CreateOrderResult.ValidationError
+                        {
+                            Message = "Command weight is more than 30kg",
+                            PropertyName = "Weight",
+                            Code = "Command_WeightExceeded_Error"
+                        }
+                    }
+                };
+            }
         }
 
         var createdOrder = command.ToOrder();
