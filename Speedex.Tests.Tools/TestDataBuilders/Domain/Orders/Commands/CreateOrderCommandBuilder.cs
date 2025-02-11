@@ -5,7 +5,7 @@ namespace Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.Commands;
 
 public class CreateOrderCommandBuilder
 {
-    private readonly List<CreateOrderCommandProductBuilder> _products =
+    private List<CreateOrderCommandProductBuilder> _products =
     [
         CreateOrderCommandProductBuilder.ACreateOrderCommandProduct
     ];
@@ -32,6 +32,12 @@ public class CreateOrderCommandBuilder
     public CreateOrderCommandBuilder WithProduct(CreateOrderCommandProductBuilder product)
     {
         _products.Add(product);
+        return this;
+    }
+
+    public CreateOrderCommandBuilder WithProducts(params CreateOrderCommandProductBuilder[] products)
+    {
+        _products = products.ToList();
         return this;
     }
 
