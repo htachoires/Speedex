@@ -1,12 +1,14 @@
 using Speedex.Domain.Parcels.UseCases.CreateParcel;
 using FluentValidation;
 using Speedex.Domain.Orders;
+using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Parcels;
 using Speedex.Domain.Parcels.Repositories;
 using Speedex.Domain.Products;
 using Speedex.Domain.Products.Repositories;
 using Speedex.Domain.Tests.Unit.Parcels;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders.Commands;
 using Speedex.Tests.Tools.TestDataBuilders.Domain.Parcels;
 
@@ -29,7 +31,7 @@ public class CreateParcelCommandHandlerTests
         // Arrange
         var parcelRepository = Substitute.For<IParcelRepository>();
         var productRepository = Substitute.For<IProductRepository>();
-        
+        var orderRepository = Substitute.For<IOrderRepository>();
         
         var product = new Product()
         {
@@ -45,7 +47,7 @@ public class CreateParcelCommandHandlerTests
 
         productRepository.GetProductById(new ProductId("productId"), CancellationToken.None).Returns(product);
         
-        var handler = new CreateParcelCommandHandler(parcelRepository, productRepository, _parcelValidator);
+        var handler = new CreateParcelCommandHandler(parcelRepository, productRepository, orderRepository, _parcelValidator);
         
         var parcelCommand = new CreateParcelCommand{
             OrderId = new OrderId("orderId"),
@@ -66,5 +68,71 @@ public class CreateParcelCommandHandlerTests
         Assert.False(result.Success);
         Assert.Equal("The total volume cannot be more than 1 cubic meter", result.Errors.FirstOrDefault().Message);
         Assert.Equal("Parcel_VolumeExceeded_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_Failure_Result_When_Parcel_Has_Products_Not_In_Command()
+    {
+        // Arrange
+        var parcelRepository = Substitute.For<IParcelRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var productInCommand = new Product()
+        {
+            ProductId = new ProductId("productInCommandId"),
+        };
+        
+        var productNotInCommand = new Product()
+        {
+            ProductId = new ProductId("productNotInCommandId"),
+        };
+
+        var orderProductInCommand = AnOrderProduct.WithProductId(productInCommand.ProductId);
+
+        var order = AnOrder.Id(new OrderId("orderId"))
+            .WithProducts(new List<OrderProductBuilder>()
+            {
+                orderProductInCommand,
+            }).Build();
+
+        var orderQuery = new GetOrdersDto
+        {
+            OrderId = order.OrderId
+        };
+        
+        productRepository.GetProductById(productInCommand.ProductId, CancellationToken.None).Returns(productInCommand);
+        productRepository.GetProductById(productNotInCommand.ProductId, CancellationToken.None).Returns(productNotInCommand);
+        orderRepository.GetOrders(orderQuery).Returns(new List<Order>
+        {
+            order
+        });
+        
+        var parcelHandler = new CreateParcelCommandHandler(parcelRepository, productRepository, orderRepository, _parcelValidator);
+        
+        var parcelCommand = new CreateParcelCommand{
+            OrderId = new OrderId("orderId"),
+            Products = new List<CreateParcelCommand.ParcelProductCreateParcelCommand>
+            {
+                new()
+                {
+                    ProductId = productInCommand.ProductId,
+                    Quantity = 1,
+                },
+                new()
+                {
+                    ProductId = productNotInCommand.ProductId,
+                    Quantity = 1,
+                }
+            }
+        };
+        
+        // Act
+        var result = await parcelHandler.Handle(parcelCommand, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("One or more products in the parcel are not in the order", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Parcel_ProductsNotInOrder_Error", result.Errors.FirstOrDefault().Code);
     }
 }

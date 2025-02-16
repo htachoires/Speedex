@@ -1,4 +1,5 @@
 using Speedex.Domain.Orders;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Products;
 
 namespace Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 
@@ -20,6 +21,12 @@ public class OrderBuilder
 
     private OrderBuilder()
     {
+    }
+    
+    public OrderBuilder WithProducts(IEnumerable<OrderProductBuilder> products)
+    {
+        _products = products;
+        return this;
     }
 
     public Order Build()

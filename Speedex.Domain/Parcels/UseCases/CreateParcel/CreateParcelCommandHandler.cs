@@ -1,5 +1,7 @@
 using FluentValidation;
 using Speedex.Domain.Commons;
+using Speedex.Domain.Orders.Repositories;
+using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Parcels.Repositories;
 using Speedex.Domain.Parcels.Repositories.Dtos;
 using Speedex.Domain.Products;
@@ -11,12 +13,14 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
 {
     private readonly IParcelRepository _parcelRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly IValidator<CreateParcelCommand> _commandValidator;
     
-    public CreateParcelCommandHandler(IParcelRepository parcelRepository, IProductRepository productRepository, IValidator<CreateParcelCommand> commandValidator)
+    public CreateParcelCommandHandler(IParcelRepository parcelRepository, IProductRepository productRepository, IOrderRepository orderRepository, IValidator<CreateParcelCommand> commandValidator)
     {
         _parcelRepository = parcelRepository;
         _productRepository = productRepository;
+        _orderRepository = orderRepository;
         _commandValidator = commandValidator;
     }
 
@@ -36,6 +40,37 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
                         Code = x.ErrorCode,
                     }).ToList()
             };
+        }
+        
+        // products are in order
+        
+        // only one order should exist
+        var order = _orderRepository.GetOrders(new GetOrdersDto()
+        {
+            OrderId = command.OrderId,
+        }).FirstOrDefault();
+
+        if (order != null)
+        {
+            foreach (var parcelProduct in command.Products)
+            {
+                    if (order.Products.Any(p => p.ProductId == parcelProduct.ProductId) == false)
+                    {
+                        return new CreateParcelResult
+                        {
+                            Success = false,
+                            Errors = new List<CreateParcelResult.ValidationError>
+                            {
+                                new CreateParcelResult.ValidationError
+                                {
+                                    Message = "One or more products in the parcel are not in the order",
+                                    PropertyName = "Products",
+                                    Code = "Parcel_ProductsNotInOrder_Error",
+                                }
+                            }
+                        };
+                    }
+            }
         }
         
         // products volume < 1m^3

@@ -10,6 +10,12 @@ public class OrderProductBuilder
 
     public static OrderProductBuilder AnOrderProduct => new();
 
+    public OrderProductBuilder WithProductId(ProductId productId)
+    {
+        _productId = productId;
+        return this;
+    }
+    
     public OrderProduct Build()
     {
         return new OrderProduct
