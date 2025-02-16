@@ -39,15 +39,13 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         };
     }
     
-    var productIds = command.Products.Select(p => p.ProductId).ToList();
-    
     double totalWeight = 0;
-    foreach (var productId in productIds)
+    foreach (var product in command.Products)
     {
-        var product = await _productRepository.GetProductById(productId, cancellationToken);
-        if (product != null)
+        var productData = await _productRepository.GetProductById(product.ProductId, cancellationToken);
+        if (productData != null)
         {
-            totalWeight += product.Weight.ToKilograms().Value;
+            totalWeight += productData.Weight.ToKilograms().Value * product.Quantity;
         }
     }
     
