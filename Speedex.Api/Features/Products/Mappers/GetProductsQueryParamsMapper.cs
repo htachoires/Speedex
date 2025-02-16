@@ -13,6 +13,7 @@ public static class GetProductsQueryParamsMapper
             ProductId = queryParams.ProductId is not null ? new ProductId(queryParams.ProductId) : null,
             PageIndex = queryParams.PageIndex,
             PageSize = queryParams.PageSize,
+            Category = queryParams.Category
         };
     }
 }

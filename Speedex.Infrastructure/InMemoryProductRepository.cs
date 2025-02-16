@@ -27,8 +27,9 @@ public class InMemoryProductRepository : IProductRepository
         {
             return _products.TryGetValue(query.ProductId, out var product) ? new List<Product> { product } : new List<Product>();
         }
-
+        
         return _products.Values
+            .Where(p => (query.Category == null || string.IsNullOrEmpty(query.Category)) || p.Category == query.Category)
             .Skip((query.PageIndex - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();

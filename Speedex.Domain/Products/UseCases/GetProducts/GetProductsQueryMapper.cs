@@ -13,7 +13,8 @@ public static class GetProductsQueryMapper
         {
             ProductId = query.ProductId,
             PageIndex = query.PageIndex ?? defaultPageIndex,
-            PageSize = query.PageSize ?? defaultPageSize
+            PageSize = query.PageSize ?? defaultPageSize,
+            Category = query.Category ?? string.Empty,
         };
     }
 }

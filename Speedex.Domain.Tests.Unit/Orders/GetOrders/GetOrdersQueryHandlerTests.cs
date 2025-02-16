@@ -3,6 +3,7 @@ using Speedex.Domain.Orders.Repositories;
 using Speedex.Domain.Orders.Repositories.Dtos;
 using Speedex.Domain.Orders.UseCases.GetOrders;
 using Speedex.Domain.Products;
+using Speedex.Tests.Tools.TestDataBuilders.Domain.Orders;
 
 namespace Speedex.Domain.Tests.Unit.Orders.GetOrders;
 

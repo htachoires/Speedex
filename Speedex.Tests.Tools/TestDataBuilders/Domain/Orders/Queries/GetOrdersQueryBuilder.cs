@@ -10,6 +10,7 @@ public class GetOrdersQueryBuilder
     private ProductId _productId = new("fooProductId");
     private int? _pageIndex = 1;
     private int? _pageSize = 100;
+    private string? category;
 
     public static GetOrdersQueryBuilder AGetOrdersQuery => new();
 
@@ -25,6 +26,7 @@ public class GetOrdersQueryBuilder
             ProductId = _productId,
             PageIndex = _pageIndex,
             PageSize = _pageSize,
+            Category = category
         };
     }
 
@@ -61,6 +63,12 @@ public class GetOrdersQueryBuilder
     public GetOrdersQueryBuilder WithoutPageIndex()
     {
         _pageIndex = null;
+        return this;
+    }
+
+    public GetOrdersQueryBuilder WithCategory(string category)
+    {
+        this.category = category;
         return this;
     }
 }
