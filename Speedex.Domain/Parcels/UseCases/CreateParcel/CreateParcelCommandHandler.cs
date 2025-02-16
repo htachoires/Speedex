@@ -42,8 +42,6 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
             };
         }
         
-        // products are in order
-        
         // only one order should exist
         var order = _orderRepository.GetOrders(new GetOrdersDto()
         {
@@ -54,6 +52,7 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
         {
             foreach (var parcelProduct in command.Products)
             {
+                    // products are in order
                     if (order.Products.Any(p => p.ProductId == parcelProduct.ProductId) == false)
                     {
                         return new CreateParcelResult
@@ -70,11 +69,28 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
                             }
                         };
                     }
+                    
+                    // product quantity matches with order
+                    if (order.Products.Any(p => p.Quantity != parcelProduct.Quantity))
+                    {
+                        return new CreateParcelResult
+                        {
+                            Success = false,
+                            Errors = new List<CreateParcelResult.ValidationError>
+                            {
+                                new CreateParcelResult.ValidationError
+                                {
+                                    Message = "The quantity of at least one product does not match with the order",
+                                    PropertyName = "Product.Quantity",
+                                    Code = "Parcel_ProductQuantity_Error",
+                                }
+                            }
+                        };
+                    }
             }
         }
         
         // products volume < 1m^3
-
         var totalVolume = 0.0;
         
         foreach (var parcelProduct in command.Products)

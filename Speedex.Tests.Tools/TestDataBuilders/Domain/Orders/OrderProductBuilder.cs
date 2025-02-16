@@ -15,6 +15,12 @@ public class OrderProductBuilder
         _productId = productId;
         return this;
     }
+
+    public OrderProductBuilder WithQuantity(int quantity)
+    {
+        _quantity = quantity;
+        return this;
+    }
     
     public OrderProduct Build()
     {

@@ -89,7 +89,6 @@ public class CreateParcelCommandHandlerTests
         };
 
         var orderProductInCommand = AnOrderProduct.WithProductId(productInCommand.ProductId);
-
         var order = AnOrder.Id(new OrderId("orderId"))
             .WithProducts(new List<OrderProductBuilder>()
             {
@@ -107,9 +106,7 @@ public class CreateParcelCommandHandlerTests
         {
             order
         });
-        
-        var parcelHandler = new CreateParcelCommandHandler(parcelRepository, productRepository, orderRepository, _parcelValidator);
-        
+
         var parcelCommand = new CreateParcelCommand{
             OrderId = new OrderId("orderId"),
             Products = new List<CreateParcelCommand.ParcelProductCreateParcelCommand>
@@ -127,6 +124,8 @@ public class CreateParcelCommandHandlerTests
             }
         };
         
+        var parcelHandler = new CreateParcelCommandHandler(parcelRepository, productRepository, orderRepository, _parcelValidator);
+        
         // Act
         var result = await parcelHandler.Handle(parcelCommand, CancellationToken.None);
 
@@ -134,5 +133,61 @@ public class CreateParcelCommandHandlerTests
         Assert.False(result.Success);
         Assert.Equal("One or more products in the parcel are not in the order", result.Errors.FirstOrDefault().Message);
         Assert.Equal("Parcel_ProductsNotInOrder_Error", result.Errors.FirstOrDefault().Code);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Return_Failure_Result_When_Product_Quantity_Does_Not_Match()
+    {
+        // Arrange
+        var parcelRepository = Substitute.For<IParcelRepository>();
+        var productRepository = Substitute.For<IProductRepository>();
+        var orderRepository = Substitute.For<IOrderRepository>();
+
+        var product = new Product()
+        {
+            ProductId = new ProductId("productInCommandId")
+        };
+
+        var orderProduct = AnOrderProduct.WithProductId(product.ProductId).WithQuantity(2);
+        var order = AnOrder.Id(new OrderId("orderId"))
+            .WithProducts(new List<OrderProductBuilder>()
+            {
+                orderProduct,
+            }).Build();
+        
+        productRepository.GetProductById(product.ProductId, CancellationToken.None).Returns(product);
+        
+        var orderQuery = new GetOrdersDto
+        {
+            OrderId = order.OrderId
+        };
+        
+        orderRepository.GetOrders(orderQuery).Returns(new List<Order>
+        {
+            order
+        });
+        
+        
+        var parcelCommand = new CreateParcelCommand{
+            OrderId = new OrderId("orderId"),
+            Products = new List<CreateParcelCommand.ParcelProductCreateParcelCommand>
+            {
+                new()
+                {
+                    ProductId = product.ProductId,
+                    Quantity = 1,
+                },
+            }
+        };
+        
+        var parcelHandler = new CreateParcelCommandHandler(parcelRepository, productRepository, orderRepository, _parcelValidator);
+        
+        // Act
+        var result = await parcelHandler.Handle(parcelCommand, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("The quantity of at least one product does not match with the order", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Parcel_ProductQuantity_Error", result.Errors.FirstOrDefault().Code);
     }
 }
