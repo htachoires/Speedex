@@ -47,7 +47,7 @@ public class CreateParcelCommandHandler : ICommandHandler<CreateParcelCommand, C
             Product? product = await _productRepository.GetProductById(parcelProduct.ProductId, CancellationToken.None);
             if (product != null)
             {
-                totalVolume += product.Dimensions.VolumeInCubicMeter;
+                totalVolume += product.Dimensions.VolumeInCubicMeter * parcelProduct.Quantity;
             }
         }
 
