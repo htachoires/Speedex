@@ -47,7 +47,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Cre
         var product = await _productRepository.GetProductById(productId, cancellationToken);
         if (product != null)
         {
-            totalWeight += product.Weight.Value;
+            totalWeight += product.Weight.ToKilograms().Value;
         }
     }
     
