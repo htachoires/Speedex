@@ -46,7 +46,7 @@ public class CreateParcelCommandHandlerTests
         productRepository.GetProductById(new ProductId("productId"), CancellationToken.None).Returns(product);
         
         var handler = new CreateParcelCommandHandler(parcelRepository, productRepository, _parcelValidator);
-
+        
         var parcelCommand = new CreateParcelCommand{
             OrderId = new OrderId("orderId"),
             Products = new List<CreateParcelCommand.ParcelProductCreateParcelCommand>
@@ -64,6 +64,7 @@ public class CreateParcelCommandHandlerTests
 
         // Assert
         Assert.False(result.Success);
+        Assert.Equal("The total volume cannot be more than 1 cubic meter", result.Errors.FirstOrDefault().Message);
+        Assert.Equal("Parcel_VolumeExceeded_Error", result.Errors.FirstOrDefault().Code);
     }
-
 }
